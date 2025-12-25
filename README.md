@@ -52,7 +52,7 @@ Fox Macro Recorder is a Chrome extension that helps you automate repetitive clic
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode" (toggle in top right)
 4. Click "Load unpacked"
-5. Select the `chrome-macro-recorder` folder
+5. Select the `fox-macro-recorder` folder
 6. The Fox Macro Recorder icon will appear in your extensions
 
 ### Required Files
@@ -134,7 +134,7 @@ During playback, you'll see:
 ## File Structure
 
 ```
-chrome-macro-recorder/
+fox-macro-recorder/
 ├── manifest.json          # Extension configuration
 ├── content.js             # Main recorder logic & floating panel
 ├── popup/
@@ -186,7 +186,7 @@ chrome-macro-recorder/
 You need to host this privacy policy at a publicly accessible URL. Options:
 1. **GitHub (Recommended):** If your repository is public, use:
    ```
-   https://github.com/YOUR_USERNAME/chrome-macro-recorder/blob/main/PRIVACY_POLICY.md
+   https://github.com/YOUR_USERNAME/fox-macro-recorder/blob/main/PRIVACY_POLICY.md
    ```
 2. **GitHub Pages:** Host it as a webpage
 3. **Your Website:** Upload to your personal/company website
