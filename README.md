@@ -2,6 +2,10 @@
 
 > Cleverly record and replay your clicks like a sly fox - automate repetitive tasks with precision!
 
+[![Vibe Coding Project](https://img.shields.io/badge/vibe-coding%20project-ff69b4?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
+
+**Note:** This is a vibe coding project - built for fun, experimentation, and learning! While it's fully functional, it was created with a focus on exploring ideas and enjoying the development process. 🎨✨
+
 ## Single Purpose
 
 **Record and replay mouse click sequences on web pages to automate repetitive clicking tasks.**
