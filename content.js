@@ -153,6 +153,38 @@ function createPanel() {
     .mr-macro-name { font-weight: 500; font-size: 15px; }
     .mr-macro-info { font-size: 13px; color: #999; }
     .mr-macro-actions { display: flex; gap: 6px; }
+    .mr-loop-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    .mr-loop-control {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mr-loop-label {
+      font-size: 11px;
+      color: #999;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .mr-loop-control input {
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .mr-loop-control input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
     .mr-import { margin-top: 6px; }
   `;
 
@@ -256,6 +288,8 @@ async function loadMacros() {
 
   list.innerHTML = macros.map(m => {
     const totalTime = m.actions.length > 0 ? m.actions[m.actions.length - 1].timestamp : 0;
+    const loopCount = m.loopCount || 1;
+    const loopDelay = m.loopDelay || 0;
 
     return `
     <div class="mr-macro-item" data-id="${m.id}">
@@ -268,6 +302,16 @@ async function loadMacros() {
         <button class="mr-btn mr-btn-edit" data-action="edit">Edit</button>
         <button class="mr-btn mr-btn-export" data-action="export">Export</button>
         <button class="mr-btn mr-btn-delete" data-action="delete">Delete</button>
+      </div>
+      <div class="mr-loop-controls">
+        <div class="mr-loop-control">
+          <label class="mr-loop-label">Loop Count</label>
+          <input type="number" class="mr-loop-count-input" value="${loopCount}" min="1" max="999" data-id="${m.id}">
+        </div>
+        <div class="mr-loop-control">
+          <label class="mr-loop-label">Loop Delay (ms)</label>
+          <input type="number" class="mr-loop-delay-input" value="${loopDelay}" min="0" data-id="${m.id}">
+        </div>
       </div>
     </div>
     `;
@@ -290,7 +334,37 @@ async function loadMacros() {
     item.querySelector('[data-action="edit"]').addEventListener('click', () => openEditPanel(id));
     item.querySelector('[data-action="export"]').addEventListener('click', () => exportMacro(id));
     item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteMacro(id));
+
+    // Loop controls
+    const loopCountInput = item.querySelector('.mr-loop-count-input');
+    const loopDelayInput = item.querySelector('.mr-loop-delay-input');
+
+    loopCountInput.addEventListener('change', async () => {
+      const newLoopCount = parseInt(loopCountInput.value) || 1;
+      await updateMacroLoopSettings(id, newLoopCount, null);
+    });
+
+    loopDelayInput.addEventListener('change', async () => {
+      const newLoopDelay = parseInt(loopDelayInput.value) || 0;
+      await updateMacroLoopSettings(id, null, newLoopDelay);
+    });
   });
+}
+
+async function updateMacroLoopSettings(id, loopCount, loopDelay) {
+  const result = await chrome.storage.local.get(['macros']);
+  const macros = result.macros || [];
+  const macroIndex = macros.findIndex(m => m.id === id);
+
+  if (macroIndex !== -1) {
+    if (loopCount !== null) {
+      macros[macroIndex].loopCount = loopCount;
+    }
+    if (loopDelay !== null) {
+      macros[macroIndex].loopDelay = loopDelay;
+    }
+    await chrome.storage.local.set({ macros });
+  }
 }
 
 async function playMacro(id, playBtn) {
@@ -298,6 +372,8 @@ async function playMacro(id, playBtn) {
   const macro = result.macros.find(m => m.id === id);
   if (macro) {
     const statusEl = document.getElementById('mr-status');
+    const loopCount = macro.loopCount || 1;
+    const loopDelay = macro.loopDelay || 0;
 
     isPlaying = true;
     shouldStopPlayback = false;
@@ -310,7 +386,20 @@ async function playMacro(id, playBtn) {
       playBtn.className = 'mr-btn mr-btn-stop-macro';
     }
 
-    await playActions(macro.actions);
+    // Loop through the macro the specified number of times
+    for (let loop = 0; loop < loopCount; loop++) {
+      if (shouldStopPlayback) break;
+
+      await playActions(macro.actions, loop + 1, loopCount);
+
+      // Add delay between loops (except after the last loop)
+      if (loop < loopCount - 1 && loopDelay > 0 && !shouldStopPlayback) {
+        if (statusEl) {
+          statusEl.textContent = `⏸ Waiting ${loopDelay}ms before loop ${loop + 2}/${loopCount}...`;
+        }
+        await new Promise(resolve => setTimeout(resolve, loopDelay));
+      }
+    }
 
     isPlaying = false;
     statusEl.textContent = shouldStopPlayback ? 'Stopped' : 'Ready';
@@ -579,6 +668,32 @@ async function openEditPanel(id) {
       .me-btn-save:hover {
         background: #45a049;
       }
+      .me-loop-settings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .me-loop-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .me-loop-field label {
+        font-size: 13px;
+        color: #666;
+        font-weight: 500;
+      }
+      .me-loop-input {
+        padding: 10px 12px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        text-align: center;
+      }
+      .me-loop-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
     `;
     document.head.appendChild(editStyle);
   }
@@ -775,6 +890,7 @@ async function openEditPanel(id) {
         ...macro,
         name: newName,
         actions: finalActions
+        // Loop settings are preserved from existing macro and updated via main panel
       };
       await chrome.storage.local.set({ macros });
       loadMacros();
@@ -1044,7 +1160,7 @@ async function simulateClick(action, delay) {
 }
 
 // Play back a sequence of actions with original timing
-async function playActions(actions) {
+async function playActions(actions, currentLoop = 1, totalLoops = 1) {
   for (let i = 0; i < actions.length; i++) {
     // Check if playback should stop
     if (shouldStopPlayback) {
@@ -1058,7 +1174,11 @@ async function playActions(actions) {
     // Update status with progress
     const statusEl = document.getElementById('mr-status');
     if (statusEl && !shouldStopPlayback) {
-      statusEl.textContent = `Playing ${i + 1}/${actions.length}...`;
+      if (totalLoops > 1) {
+        statusEl.textContent = `🔄 Loop ${currentLoop}/${totalLoops} • Click ${i + 1}/${actions.length}`;
+      } else {
+        statusEl.textContent = `Playing ${i + 1}/${actions.length}...`;
+      }
     }
 
     await simulateClick(action, delay);
