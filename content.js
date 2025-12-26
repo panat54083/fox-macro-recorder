@@ -551,9 +551,14 @@ async function openEditPanel(id) {
         padding: 10px 12px;
         margin-bottom: 8px;
         display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border: 1px solid #eee;
+      }
+      .me-action-row {
+        display: flex;
         align-items: center;
         gap: 12px;
-        border: 1px solid #eee;
       }
       .me-action-number {
         background: #667eea;
@@ -589,6 +594,28 @@ async function openEditPanel(id) {
       .me-delay-input:focus {
         outline: none;
         border-color: #667eea;
+      }
+      .me-position-inputs {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .me-position-input {
+        width: 70px;
+        padding: 6px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+        text-align: center;
+      }
+      .me-position-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .me-position-label {
+        font-size: 11px;
+        color: #999;
+        font-weight: 600;
       }
       .me-combine-select {
         width: 100%;
@@ -726,16 +753,23 @@ async function openEditPanel(id) {
     const delay = index === 0 ? 0 : (action.timestamp - macro.actions[index - 1].timestamp);
     return `
       <div class="me-action-item">
-        <div class="me-action-number">${index + 1}</div>
-        <div class="me-action-info">
-          Click at (${Math.round(action.x)}, ${Math.round(action.y)})
-          ${action.text ? `· ${action.text.slice(0, 30)}...` : ''}
+        <div class="me-action-row">
+          <div class="me-action-number">${index + 1}</div>
+          <div class="me-action-info" style="flex: 1;">
+            ${action.text ? `${action.text.slice(0, 30)}${action.text.length > 30 ? '...' : ''}` : 'Click'}
+          </div>
+          ${index > 0 ? `
+            <span class="me-delay-label">Delay:</span>
+            <input type="number" class="me-delay-input" data-index="${index}" value="${delay}" min="0">
+            <span style="font-size: 12px; color: #999;">ms</span>
+          ` : '<span style="font-size: 12px; color: #999;">First click</span>'}
         </div>
-        ${index > 0 ? `
-          <span class="me-delay-label">Delay:</span>
-          <input type="number" class="me-delay-input" data-index="${index}" value="${delay}" min="0">
-          <span style="font-size: 12px; color: #999;">ms</span>
-        ` : '<span style="font-size: 12px; color: #999;">First click</span>'}
+        <div class="me-position-inputs">
+          <span class="me-position-label">X:</span>
+          <input type="number" class="me-position-input me-x-input" data-index="${index}" value="${Math.round(action.x)}" min="0">
+          <span class="me-position-label">Y:</span>
+          <input type="number" class="me-position-input me-y-input" data-index="${index}" value="${Math.round(action.y)}" min="0">
+        </div>
       </div>
     `;
   }).join('');
@@ -850,10 +884,26 @@ async function openEditPanel(id) {
   document.getElementById('me-save').addEventListener('click', async () => {
     const newName = document.getElementById('me-name-input').value.trim() || macro.name;
 
-    // Get updated delays for actions
+    // Get updated delays and positions for actions
     const updatedActions = [...macro.actions];
     const delayInputs = editPanel.querySelectorAll('.me-delay-input[data-index]');
+    const xInputs = editPanel.querySelectorAll('.me-x-input[data-index]');
+    const yInputs = editPanel.querySelectorAll('.me-y-input[data-index]');
 
+    // Update positions first
+    xInputs.forEach(input => {
+      const index = parseInt(input.dataset.index);
+      const newX = parseFloat(input.value) || 0;
+      updatedActions[index].x = newX;
+    });
+
+    yInputs.forEach(input => {
+      const index = parseInt(input.dataset.index);
+      const newY = parseFloat(input.value) || 0;
+      updatedActions[index].y = newY;
+    });
+
+    // Then update delays
     delayInputs.forEach(input => {
       const index = parseInt(input.dataset.index);
       const newDelay = parseInt(input.value) || 0;
