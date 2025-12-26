@@ -1168,13 +1168,14 @@ function createInspectorPanel() {
 function trackMousePosition(e) {
   if (!isInspectorActive) return;
 
-  // Don't track if over inspector panel or main panel
-  if (e.target.closest('#inspector-panel') || e.target.closest('#macro-recorder-panel')) {
+  // Don't track if over any extension panels (inspector, main, or edit panel)
+  if (e.target.closest('#inspector-panel') ||
+      e.target.closest('#macro-recorder-panel') ||
+      e.target.closest('#macro-edit-panel')) {
     return;
   }
 
   const element = e.target;
-  const rect = element.getBoundingClientRect();
 
   const data = {
     x: e.clientX,
@@ -1194,8 +1195,10 @@ function trackMousePosition(e) {
 function captureSnapshot(e) {
   if (!isInspectorActive) return;
 
-  // Ignore clicks on inspector panel or main panel
-  if (e.target.closest('#inspector-panel') || e.target.closest('#macro-recorder-panel')) {
+  // Ignore clicks on any extension panels (inspector, main, or edit panel)
+  if (e.target.closest('#inspector-panel') ||
+      e.target.closest('#macro-recorder-panel') ||
+      e.target.closest('#macro-edit-panel')) {
     return;
   }
 
@@ -1203,7 +1206,6 @@ function captureSnapshot(e) {
   e.stopPropagation();
 
   const element = e.target;
-  const rect = element.getBoundingClientRect();
 
   const snapshot = {
     time: new Date().toLocaleTimeString(),
