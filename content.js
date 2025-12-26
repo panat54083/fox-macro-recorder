@@ -501,6 +501,8 @@ async function openEditPanel(id) {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        cursor: move;
+        user-select: none;
       }
       .me-title { font-weight: 600; font-size: 17px; }
       .me-close {
@@ -817,6 +819,9 @@ async function openEditPanel(id) {
 
   editPanel.classList.add('visible');
 
+  // Make panel draggable
+  makeDraggable(editPanel, editPanel.querySelector('.me-header'));
+
   // Track combined macros
   let combinedMacros = [];
 
@@ -1044,6 +1049,8 @@ function createInspectorPanel() {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: move;
+      user-select: none;
     }
     .insp-title { font-weight: 600; font-size: 16px; }
     .insp-close {
@@ -1152,6 +1159,9 @@ function createInspectorPanel() {
   document.head.appendChild(inspectorStyle);
 
   updateInspectorPanel(null);
+
+  // Make panel draggable (called once after initial creation)
+  makeDraggable(inspectorPanel, inspectorPanel.querySelector('.insp-header'));
 }
 
 // Track mouse position
@@ -1301,6 +1311,13 @@ function updateInspectorPanel(currentData) {
       inspectorSnapshots = [];
       updateInspectorPanel(null);
     });
+  }
+
+  // Re-bind drag handler (since innerHTML was replaced)
+  const header = inspectorPanel.querySelector('.insp-header');
+  if (header && !header.hasAttribute('data-drag-bound')) {
+    makeDraggable(inspectorPanel, header);
+    header.setAttribute('data-drag-bound', 'true');
   }
 }
 
