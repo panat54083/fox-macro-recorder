@@ -8,6 +8,9 @@ let recordedActions = [];
 let panel = null;
 let editPanel = null;
 let currentEditMacroId = null;
+let inspectorPanel = null;
+let isInspectorActive = false;
+let inspectorSnapshots = [];
 
 // Create floating panel
 function createPanel() {
@@ -18,6 +21,7 @@ function createPanel() {
   panel.innerHTML = `
     <div class="mr-header">
       <span class="mr-title">🦊 Fox Macro Recorder</span>
+      <button class="mr-inspector-btn" id="mr-inspector-btn" title="Position Inspector">🔍</button>
     </div>
     <div class="mr-body">
       <div class="mr-status" id="mr-status">Ready</div>
@@ -71,6 +75,20 @@ function createPanel() {
       user-select: none;
     }
     .mr-title { font-weight: 600; font-size: 16px; }
+    .mr-inspector-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: all 0.2s;
+    }
+    .mr-inspector-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+    .mr-inspector-btn.active { background: rgba(255,255,255,0.4); }
     .mr-minimize {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -229,6 +247,7 @@ function bindPanelEvents() {
   const nameInput = document.getElementById('mr-name');
   const saveSection = document.getElementById('mr-save');
   const statusEl = document.getElementById('mr-status');
+  const inspectorBtn = document.getElementById('mr-inspector-btn');
 
   recordBtn.addEventListener('click', () => {
     isRecording = true;
@@ -273,6 +292,10 @@ function bindPanelEvents() {
     recordedActions = [];
     statusEl.textContent = 'Ready';
     loadMacros();
+  });
+
+  inspectorBtn.addEventListener('click', () => {
+    toggleInspector();
   });
 }
 
@@ -911,6 +934,324 @@ function closeEditPanel() {
     editPanel.classList.remove('visible');
   }
   currentEditMacroId = null;
+}
+
+// Toggle inspector panel
+function toggleInspector() {
+  const inspectorBtn = document.getElementById('mr-inspector-btn');
+
+  if (isInspectorActive) {
+    // Deactivate inspector
+    isInspectorActive = false;
+    inspectorBtn.classList.remove('active');
+    if (inspectorPanel) {
+      inspectorPanel.classList.remove('visible');
+    }
+    document.removeEventListener('mousemove', trackMousePosition);
+    document.removeEventListener('click', captureSnapshot, true);
+  } else {
+    // Activate inspector
+    isInspectorActive = true;
+    inspectorBtn.classList.add('active');
+    if (!inspectorPanel) {
+      createInspectorPanel();
+    }
+    inspectorPanel.classList.add('visible');
+    document.addEventListener('mousemove', trackMousePosition);
+    document.addEventListener('click', captureSnapshot, true);
+  }
+}
+
+// Create inspector panel
+function createInspectorPanel() {
+  inspectorPanel = document.createElement('div');
+  inspectorPanel.id = 'inspector-panel';
+  document.body.appendChild(inspectorPanel);
+
+  const inspectorStyle = document.createElement('style');
+  inspectorStyle.id = 'inspector-panel-styles';
+  inspectorStyle.textContent = `
+    #inspector-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: min(400px, 90vw);
+      max-height: 60vh;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      z-index: 2147483647;
+      overflow: hidden;
+      font-size: 14px;
+      display: none;
+    }
+    #inspector-panel.visible { display: block; }
+    .insp-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .insp-title { font-weight: 600; font-size: 16px; }
+    .insp-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .insp-close:hover { background: rgba(255,255,255,0.3); }
+    .insp-body { padding: 16px; overflow-y: auto; max-height: calc(60vh - 120px); }
+    .insp-current {
+      background: #f0f7ff;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    .insp-current-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .insp-data-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .insp-label {
+      font-weight: 600;
+      color: #666;
+      min-width: 70px;
+    }
+    .insp-value {
+      color: #333;
+      font-family: 'Courier New', monospace;
+    }
+    .insp-element {
+      color: #667eea;
+      font-weight: 500;
+      word-break: break-all;
+    }
+    .insp-snapshots {
+      margin-top: 16px;
+    }
+    .insp-snapshots-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .insp-snapshots-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .insp-clear-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .insp-clear-btn:hover { background: #d32f2f; }
+    .insp-snapshot-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .insp-snapshot-item {
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .insp-snapshot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .insp-snapshot-time {
+      font-size: 11px;
+      color: #999;
+    }
+    .insp-empty {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-size: 13px;
+    }
+  `;
+  document.head.appendChild(inspectorStyle);
+
+  updateInspectorPanel(null);
+}
+
+// Track mouse position
+function trackMousePosition(e) {
+  if (!isInspectorActive) return;
+
+  // Don't track if over inspector panel or main panel
+  if (e.target.closest('#inspector-panel') || e.target.closest('#macro-recorder-panel')) {
+    return;
+  }
+
+  const element = e.target;
+  const rect = element.getBoundingClientRect();
+
+  const data = {
+    x: e.clientX,
+    y: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
+    element: element.tagName.toLowerCase(),
+    elementId: element.id || '(none)',
+    elementClass: element.className || '(none)',
+    elementText: element.textContent?.slice(0, 50) || '(empty)'
+  };
+
+  updateInspectorPanel(data);
+}
+
+// Capture snapshot
+function captureSnapshot(e) {
+  if (!isInspectorActive) return;
+
+  // Ignore clicks on inspector panel or main panel
+  if (e.target.closest('#inspector-panel') || e.target.closest('#macro-recorder-panel')) {
+    return;
+  }
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  const element = e.target;
+  const rect = element.getBoundingClientRect();
+
+  const snapshot = {
+    time: new Date().toLocaleTimeString(),
+    x: e.clientX,
+    y: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
+    element: element.tagName.toLowerCase(),
+    elementId: element.id || '(none)',
+    elementClass: element.className || '(none)',
+    elementText: element.textContent?.slice(0, 30) || '(empty)'
+  };
+
+  inspectorSnapshots.push(snapshot);
+  updateInspectorPanel(null);
+}
+
+// Update inspector panel
+function updateInspectorPanel(currentData) {
+  if (!inspectorPanel) return;
+
+  const currentHtml = currentData ? `
+    <div class="insp-current">
+      <div class="insp-current-title">Current Position</div>
+      <div class="insp-data-row">
+        <span class="insp-label">X:</span>
+        <span class="insp-value">${currentData.x}</span>
+      </div>
+      <div class="insp-data-row">
+        <span class="insp-label">Y:</span>
+        <span class="insp-value">${currentData.y}</span>
+      </div>
+      <div class="insp-data-row">
+        <span class="insp-label">Element:</span>
+        <span class="insp-element">&lt;${currentData.element}&gt;</span>
+      </div>
+      <div class="insp-data-row">
+        <span class="insp-label">ID:</span>
+        <span class="insp-value">${currentData.elementId}</span>
+      </div>
+      <div class="insp-data-row">
+        <span class="insp-label">Text:</span>
+        <span class="insp-value">${currentData.elementText}</span>
+      </div>
+    </div>
+  ` : `
+    <div class="insp-current">
+      <div class="insp-current-title">Current Position</div>
+      <div class="insp-empty">Move mouse to see position</div>
+    </div>
+  `;
+
+  const snapshotsHtml = inspectorSnapshots.length > 0 ?
+    inspectorSnapshots.map((snap, idx) => `
+      <div class="insp-snapshot-item">
+        <div class="insp-snapshot-header">
+          <span style="font-weight: 600; font-size: 12px;">#${idx + 1}</span>
+          <span class="insp-snapshot-time">${snap.time}</span>
+        </div>
+        <div class="insp-data-row">
+          <span class="insp-label">X, Y:</span>
+          <span class="insp-value">${snap.x}, ${snap.y}</span>
+        </div>
+        <div class="insp-data-row">
+          <span class="insp-label">Element:</span>
+          <span class="insp-element">&lt;${snap.element}&gt;</span>
+        </div>
+        <div class="insp-data-row">
+          <span class="insp-label">Text:</span>
+          <span class="insp-value">${snap.elementText}</span>
+        </div>
+      </div>
+    `).join('') :
+    '<div class="insp-empty">Click anywhere to save position snapshot</div>';
+
+  inspectorPanel.innerHTML = `
+    <div class="insp-header">
+      <span class="insp-title">🔍 Position Inspector</span>
+      <button class="insp-close" id="insp-close">×</button>
+    </div>
+    <div class="insp-body">
+      ${currentHtml}
+      <div class="insp-snapshots">
+        <div class="insp-snapshots-header">
+          <span class="insp-snapshots-title">Snapshots (${inspectorSnapshots.length})</span>
+          ${inspectorSnapshots.length > 0 ? '<button class="insp-clear-btn" id="insp-clear">Clear</button>' : ''}
+        </div>
+        <div class="insp-snapshot-list">
+          ${snapshotsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Bind close button
+  const closeBtn = inspectorPanel.querySelector('#insp-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', toggleInspector);
+  }
+
+  // Bind clear button
+  const clearBtn = inspectorPanel.querySelector('#insp-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      inspectorSnapshots = [];
+      updateInspectorPanel(null);
+    });
+  }
 }
 
 // Initialize panel when page loads
