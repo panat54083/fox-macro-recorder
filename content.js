@@ -11,6 +11,7 @@ let currentEditMacroId = null;
 let inspectorPanel = null;
 let isInspectorActive = false;
 let inspectorSnapshots = [];
+let isRandomDelayEnabled = false;
 
 // Create floating panel
 function createPanel() {
@@ -28,6 +29,12 @@ function createPanel() {
       <div class="mr-controls">
         <button class="mr-btn mr-btn-record" id="mr-record">Record</button>
         <button class="mr-btn mr-btn-stop" id="mr-stop" disabled>Stop</button>
+      </div>
+      <div class="mr-random-delay">
+        <label class="mr-checkbox-label">
+          <input type="checkbox" id="mr-random-delay-toggle" class="mr-checkbox">
+          <span>Random Delay (100-500ms)</span>
+        </label>
       </div>
       <div class="mr-save" id="mr-save" style="display: none;">
         <input type="text" id="mr-name" placeholder="Macro name...">
@@ -120,6 +127,27 @@ function createPanel() {
     .mr-status.playing { background: #e3f2fd; color: #1565c0; }
     @keyframes mr-pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
     .mr-controls { display: flex; gap: 10px; margin-bottom: 14px; }
+    .mr-random-delay {
+      margin-bottom: 14px;
+      padding: 10px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      border: 1px solid #667eea33;
+    }
+    .mr-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+    }
+    .mr-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
     .mr-btn {
       flex: 1;
       padding: 12px 16px;
@@ -297,6 +325,25 @@ function bindPanelEvents() {
   inspectorBtn.addEventListener('click', () => {
     toggleInspector();
   });
+
+  // Random delay toggle
+  const randomDelayToggle = document.getElementById('mr-random-delay-toggle');
+  randomDelayToggle.addEventListener('change', async () => {
+    isRandomDelayEnabled = randomDelayToggle.checked;
+    await chrome.storage.local.set({ randomDelayEnabled: isRandomDelayEnabled });
+  });
+
+  // Load random delay setting
+  loadRandomDelaySetting();
+}
+
+async function loadRandomDelaySetting() {
+  const result = await chrome.storage.local.get(['randomDelayEnabled']);
+  isRandomDelayEnabled = result.randomDelayEnabled || false;
+  const toggle = document.getElementById('mr-random-delay-toggle');
+  if (toggle) {
+    toggle.checked = isRandomDelayEnabled;
+  }
 }
 
 async function loadMacros() {
@@ -1579,7 +1626,13 @@ async function playActions(actions, currentLoop = 1, totalLoops = 1) {
 
     const action = actions[i];
     // Use the exact recorded timing between clicks
-    const delay = i === 0 ? 500 : (actions[i].timestamp - actions[i - 1].timestamp) || 500;
+    let delay = i === 0 ? 500 : (actions[i].timestamp - actions[i - 1].timestamp) || 500;
+
+    // Add random delay if enabled (100-500ms)
+    if (isRandomDelayEnabled) {
+      const randomDelay = Math.floor(Math.random() * 401) + 100; // 100-500ms
+      delay += randomDelay;
+    }
 
     // Update status with progress
     const statusEl = document.getElementById('mr-status');
