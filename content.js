@@ -464,10 +464,18 @@ async function playMacro(id, playBtn) {
 
       // Add delay between loops (except after the last loop)
       if (loop < loopCount - 1 && loopDelay > 0 && !shouldStopPlayback) {
-        if (statusEl) {
-          statusEl.textContent = `⏸ Waiting ${loopDelay}ms before loop ${loop + 2}/${loopCount}...`;
+        let actualLoopDelay = loopDelay;
+
+        // Add random delay if enabled (100-500ms)
+        if (isRandomDelayEnabled) {
+          const randomDelay = Math.floor(Math.random() * 401) + 100; // 100-500ms
+          actualLoopDelay += randomDelay;
         }
-        await new Promise(resolve => setTimeout(resolve, loopDelay));
+
+        if (statusEl) {
+          statusEl.textContent = `⏸ Waiting ${actualLoopDelay}ms before loop ${loop + 2}/${loopCount}...`;
+        }
+        await new Promise(resolve => setTimeout(resolve, actualLoopDelay));
       }
     }
 
