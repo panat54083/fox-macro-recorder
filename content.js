@@ -12,6 +12,8 @@ let inspectorPanel = null;
 let isInspectorActive = false;
 let inspectorSnapshots = [];
 let isRandomDelayEnabled = false;
+let randomDelayMin = 100;
+let randomDelayMax = 500;
 
 // Create floating panel
 function createPanel() {
@@ -33,8 +35,14 @@ function createPanel() {
       <div class="mr-random-delay">
         <label class="mr-checkbox-label">
           <input type="checkbox" id="mr-random-delay-toggle" class="mr-checkbox">
-          <span>Random Delay (100-500ms)</span>
+          <span>Random Delay</span>
         </label>
+        <div class="mr-delay-range">
+          <input type="number" id="mr-delay-min" class="mr-delay-input" value="100" min="0" max="10000" placeholder="Min">
+          <span class="mr-delay-separator">-</span>
+          <input type="number" id="mr-delay-max" class="mr-delay-input" value="500" min="0" max="10000" placeholder="Max">
+          <span class="mr-delay-unit">ms</span>
+        </div>
       </div>
       <div class="mr-save" id="mr-save" style="display: none;">
         <input type="text" id="mr-name" placeholder="Macro name...">
@@ -147,6 +155,34 @@ function createPanel() {
       height: 18px;
       cursor: pointer;
       accent-color: #667eea;
+    }
+    .mr-delay-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-left: 26px;
+    }
+    .mr-delay-input {
+      width: 70px;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .mr-delay-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .mr-delay-separator {
+      color: #999;
+      font-weight: 500;
+    }
+    .mr-delay-unit {
+      color: #666;
+      font-size: 13px;
+      font-weight: 500;
     }
     .mr-btn {
       flex: 1;
@@ -333,16 +369,46 @@ function bindPanelEvents() {
     await chrome.storage.local.set({ randomDelayEnabled: isRandomDelayEnabled });
   });
 
+  // Random delay min/max inputs
+  const delayMinInput = document.getElementById('mr-delay-min');
+  const delayMaxInput = document.getElementById('mr-delay-max');
+
+  delayMinInput.addEventListener('change', async () => {
+    const value = parseInt(delayMinInput.value) || 0;
+    randomDelayMin = Math.max(0, Math.min(value, randomDelayMax));
+    delayMinInput.value = randomDelayMin;
+    await chrome.storage.local.set({ randomDelayMin });
+  });
+
+  delayMaxInput.addEventListener('change', async () => {
+    const value = parseInt(delayMaxInput.value) || 0;
+    randomDelayMax = Math.max(randomDelayMin, value);
+    delayMaxInput.value = randomDelayMax;
+    await chrome.storage.local.set({ randomDelayMax });
+  });
+
   // Load random delay setting
   loadRandomDelaySetting();
 }
 
 async function loadRandomDelaySetting() {
-  const result = await chrome.storage.local.get(['randomDelayEnabled']);
+  const result = await chrome.storage.local.get(['randomDelayEnabled', 'randomDelayMin', 'randomDelayMax']);
   isRandomDelayEnabled = result.randomDelayEnabled || false;
+  randomDelayMin = result.randomDelayMin || 100;
+  randomDelayMax = result.randomDelayMax || 500;
+
   const toggle = document.getElementById('mr-random-delay-toggle');
+  const minInput = document.getElementById('mr-delay-min');
+  const maxInput = document.getElementById('mr-delay-max');
+
   if (toggle) {
     toggle.checked = isRandomDelayEnabled;
+  }
+  if (minInput) {
+    minInput.value = randomDelayMin;
+  }
+  if (maxInput) {
+    maxInput.value = randomDelayMax;
   }
 }
 
@@ -466,9 +532,9 @@ async function playMacro(id, playBtn) {
       if (loop < loopCount - 1 && loopDelay > 0 && !shouldStopPlayback) {
         let actualLoopDelay = loopDelay;
 
-        // Add random delay if enabled (100-500ms)
+        // Add random delay if enabled
         if (isRandomDelayEnabled) {
-          const randomDelay = Math.floor(Math.random() * 401) + 100; // 100-500ms
+          const randomDelay = Math.floor(Math.random() * (randomDelayMax - randomDelayMin + 1)) + randomDelayMin;
           actualLoopDelay += randomDelay;
         }
 
@@ -1636,9 +1702,9 @@ async function playActions(actions, currentLoop = 1, totalLoops = 1) {
     // Use the exact recorded timing between clicks
     let delay = i === 0 ? 500 : (actions[i].timestamp - actions[i - 1].timestamp) || 500;
 
-    // Add random delay if enabled (100-500ms)
+    // Add random delay if enabled
     if (isRandomDelayEnabled) {
-      const randomDelay = Math.floor(Math.random() * 401) + 100; // 100-500ms
+      const randomDelay = Math.floor(Math.random() * (randomDelayMax - randomDelayMin + 1)) + randomDelayMin;
       delay += randomDelay;
     }
 
