@@ -26,6 +26,7 @@ function createPanel() {
       <span class="mr-title">🦊 Fox Macro Recorder</span>
       <div class="mr-header-actions">
         <button class="mr-inspector-btn" id="mr-inspector-btn" title="Position Inspector">🔍</button>
+        <button class="mr-collapse-btn" id="mr-collapse-btn" title="Collapse Panel">−</button>
         <button class="mr-close-btn" id="mr-close-btn" title="Close Panel">×</button>
       </div>
     </div>
@@ -112,6 +113,23 @@ function createPanel() {
     }
     .mr-inspector-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-inspector-btn.active { background: rgba(255,255,255,0.4); }
+    .mr-collapse-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .mr-collapse-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-close-btn {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -336,6 +354,7 @@ function bindPanelEvents() {
   const saveSection = document.getElementById('mr-save');
   const statusEl = document.getElementById('mr-status');
   const inspectorBtn = document.getElementById('mr-inspector-btn');
+  const collapseBtn = document.getElementById('mr-collapse-btn');
   const closeBtn = document.getElementById('mr-close-btn');
 
   recordBtn.addEventListener('click', () => {
@@ -385,6 +404,18 @@ function bindPanelEvents() {
 
   inspectorBtn.addEventListener('click', () => {
     toggleInspector();
+  });
+
+  collapseBtn.addEventListener('click', () => {
+    panel.classList.toggle('minimized');
+    // Update button icon based on state
+    if (panel.classList.contains('minimized')) {
+      collapseBtn.textContent = '+';
+      collapseBtn.title = 'Expand Panel';
+    } else {
+      collapseBtn.textContent = '−';
+      collapseBtn.title = 'Collapse Panel';
+    }
   });
 
   closeBtn.addEventListener('click', () => {
