@@ -142,11 +142,12 @@ function createPanel() {
       border-radius: 6px;
       cursor: pointer;
       font-size: 24px;
-      line-height: 1;
+      line-height: 0;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0;
     }
     .mr-close-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-minimize {
