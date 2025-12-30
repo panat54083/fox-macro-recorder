@@ -110,6 +110,9 @@ function createPanel() {
       font-size: 18px;
       line-height: 1;
       transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .mr-inspector-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-inspector-btn.active { background: rgba(255,255,255,0.4); }
