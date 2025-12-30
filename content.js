@@ -24,7 +24,10 @@ function createPanel() {
   panel.innerHTML = `
     <div class="mr-header">
       <span class="mr-title">🦊 Fox Macro Recorder</span>
-      <button class="mr-inspector-btn" id="mr-inspector-btn" title="Position Inspector">🔍</button>
+      <div class="mr-header-actions">
+        <button class="mr-inspector-btn" id="mr-inspector-btn" title="Position Inspector">🔍</button>
+        <button class="mr-close-btn" id="mr-close-btn" title="Close Panel">×</button>
+      </div>
     </div>
     <div class="mr-body">
       <div class="mr-status" id="mr-status">Ready</div>
@@ -90,6 +93,11 @@ function createPanel() {
       user-select: none;
     }
     .mr-title { font-weight: 600; font-size: 16px; }
+    .mr-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
     .mr-inspector-btn {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -104,6 +112,22 @@ function createPanel() {
     }
     .mr-inspector-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-inspector-btn.active { background: rgba(255,255,255,0.4); }
+    .mr-close-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mr-close-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
     .mr-minimize {
       background: rgba(255,255,255,0.2);
       border: none;
@@ -312,6 +336,7 @@ function bindPanelEvents() {
   const saveSection = document.getElementById('mr-save');
   const statusEl = document.getElementById('mr-status');
   const inspectorBtn = document.getElementById('mr-inspector-btn');
+  const closeBtn = document.getElementById('mr-close-btn');
 
   recordBtn.addEventListener('click', () => {
     isRecording = true;
@@ -360,6 +385,10 @@ function bindPanelEvents() {
 
   inspectorBtn.addEventListener('click', () => {
     toggleInspector();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    panel.classList.add('hidden');
   });
 
   // Random delay toggle
