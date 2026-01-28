@@ -38,6 +38,14 @@ function createPanel() {
         </div>
       </div>
     </div>
+    <div class="mr-resize-handle mr-resize-handle-e" data-resize="e"></div>
+    <div class="mr-resize-handle mr-resize-handle-s" data-resize="s"></div>
+    <div class="mr-resize-handle mr-resize-handle-w" data-resize="w"></div>
+    <div class="mr-resize-handle mr-resize-handle-n" data-resize="n"></div>
+    <div class="mr-resize-handle mr-resize-handle-se" data-resize="se"></div>
+    <div class="mr-resize-handle mr-resize-handle-sw" data-resize="sw"></div>
+    <div class="mr-resize-handle mr-resize-handle-ne" data-resize="ne"></div>
+    <div class="mr-resize-handle mr-resize-handle-nw" data-resize="nw"></div>
   `;
 
   const style = document.createElement('style');
@@ -47,19 +55,86 @@ function createPanel() {
       position: fixed;
       top: 20px;
       right: 20px;
-      width: min(340px, 90vw);
-      max-height: 80vh;
+      width: 380px;
+      min-width: 280px;
+      max-width: 90vw;
+      min-height: 200px;
+      max-height: 90vh;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       z-index: 2147483647;
-      overflow: hidden;
+      overflow: visible;
       font-size: 14px;
+      display: flex;
+      flex-direction: column;
     }
     #macro-recorder-panel.hidden { display: none; }
     #macro-recorder-panel.minimized .mr-body { display: none; }
-    #macro-recorder-panel.minimized { width: auto; }
+    #macro-recorder-panel.minimized .mr-resize-handle { display: none; }
+    #macro-recorder-panel.minimized { width: auto; min-width: auto; min-height: auto; }
+    #macro-recorder-panel.resizing { transition: none; user-select: none; }
+    .mr-resize-handle {
+      position: absolute;
+      z-index: 10;
+    }
+    .mr-resize-handle-e {
+      right: -4px;
+      top: 12px;
+      bottom: 12px;
+      width: 8px;
+      cursor: ew-resize;
+    }
+    .mr-resize-handle-s {
+      bottom: -4px;
+      left: 12px;
+      right: 12px;
+      height: 8px;
+      cursor: ns-resize;
+    }
+    .mr-resize-handle-w {
+      left: -4px;
+      top: 12px;
+      bottom: 12px;
+      width: 8px;
+      cursor: ew-resize;
+    }
+    .mr-resize-handle-n {
+      top: -4px;
+      left: 12px;
+      right: 12px;
+      height: 8px;
+      cursor: ns-resize;
+    }
+    .mr-resize-handle-se {
+      right: -4px;
+      bottom: -4px;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
+    .mr-resize-handle-sw {
+      left: -4px;
+      bottom: -4px;
+      width: 16px;
+      height: 16px;
+      cursor: nesw-resize;
+    }
+    .mr-resize-handle-ne {
+      right: -4px;
+      top: -4px;
+      width: 16px;
+      height: 16px;
+      cursor: nesw-resize;
+    }
+    .mr-resize-handle-nw {
+      left: -4px;
+      top: -4px;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
     .mr-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -88,7 +163,7 @@ function createPanel() {
     }
     .mr-icon-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
     .mr-icon-btn.active { background: rgba(255,255,255,0.35); }
-    .mr-body { padding: 12px; overflow-y: auto; max-height: calc(80vh - 50px); }
+    .mr-body { padding: 12px; overflow-y: auto; flex: 1; min-height: 0; }
     .mr-status {
       display: flex;
       align-items: center;
@@ -160,8 +235,13 @@ function createPanel() {
       background: #fafafa;
       border-radius: 8px;
       padding: 10px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
     }
-    .mr-macros-list { max-height: 280px; overflow-y: auto; }
+    .mr-macros-list { max-height: none; overflow-y: auto; flex: 1; }
     .mr-empty { color: #bbb; font-size: 13px; text-align: center; padding: 24px 12px; }
     .mr-macro-item {
       background: white;
@@ -175,8 +255,8 @@ function createPanel() {
     .mr-macro-row { display: flex; justify-content: space-between; align-items: center; }
     .mr-macro-name { font-weight: 600; font-size: 13px; color: #333; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .mr-macro-info { font-size: 11px; color: #999; margin-left: 8px; white-space: nowrap; }
-    .mr-macro-row2 { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-    .mr-macro-actions { display: flex; gap: 4px; }
+    .mr-macro-row2 { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px 12px; }
+    .mr-macro-actions { display: flex; gap: 4px; flex-shrink: 0; }
     .mr-action-btn {
       width: 32px;
       height: 32px;
@@ -199,19 +279,22 @@ function createPanel() {
     .mr-btn-delete { background: #ffebee; color: #d32f2f; }
     .mr-btn-delete:hover { background: #ffcdd2; }
     .mr-btn-stop-macro { background: #ff5722; color: white; }
-    .mr-loop-controls { display: flex; gap: 8px; align-items: center; }
+    .mr-loop-controls { display: flex; gap: 6px; align-items: center; flex: 1 1 auto; justify-content: flex-end; min-width: 120px; }
     .mr-loop-item {
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 12px;
+      font-size: 13px;
       color: #666;
+      flex: 1 1 48px;
+      max-width: 80px;
     }
     .mr-loop-item input {
-      width: 40px;
-      padding: 4px 6px;
+      width: 100%;
+      min-width: 48px;
+      padding: 5px 4px;
       border: 1px solid #e0e0e0;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 12px;
       text-align: center;
       transition: border-color 0.15s;
@@ -314,8 +397,85 @@ function bindPanelEvents() {
     panel.classList.add('hidden');
   });
 
+  // Setup resize handles
+  setupResizeHandles();
+
   // Load random delay setting
   loadRandomDelaySetting();
+}
+
+function setupResizeHandles() {
+  const handles = panel.querySelectorAll('.mr-resize-handle');
+
+  handles.forEach(handle => {
+    handle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const direction = handle.dataset.resize;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = panel.offsetWidth;
+      const startHeight = panel.offsetHeight;
+      const rect = panel.getBoundingClientRect();
+
+      panel.classList.add('resizing');
+
+      function onMouseMove(e) {
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+        let newLeft = rect.left;
+        let newTop = rect.top;
+
+        // Handle horizontal resize
+        if (direction.includes('e')) {
+          newWidth = Math.max(280, Math.min(startWidth + deltaX, window.innerWidth - rect.left - 10));
+        }
+        if (direction.includes('w')) {
+          const possibleWidth = startWidth - deltaX;
+          if (possibleWidth >= 280 && possibleWidth <= window.innerWidth * 0.9) {
+            newWidth = possibleWidth;
+            newLeft = rect.left + deltaX;
+          }
+        }
+
+        // Handle vertical resize
+        if (direction.includes('s')) {
+          newHeight = Math.max(200, Math.min(startHeight + deltaY, window.innerHeight - rect.top - 10));
+        }
+        if (direction.includes('n')) {
+          const possibleHeight = startHeight - deltaY;
+          if (possibleHeight >= 200 && possibleHeight <= window.innerHeight * 0.9) {
+            newHeight = possibleHeight;
+            newTop = rect.top + deltaY;
+          }
+        }
+
+        panel.style.width = newWidth + 'px';
+        panel.style.height = newHeight + 'px';
+
+        if (direction.includes('w')) {
+          panel.style.left = newLeft + 'px';
+          panel.style.right = 'auto';
+        }
+        if (direction.includes('n')) {
+          panel.style.top = newTop + 'px';
+        }
+      }
+
+      function onMouseUp() {
+        panel.classList.remove('resizing');
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  });
 }
 
 async function loadRandomDelaySetting() {
