@@ -22,7 +22,7 @@ async function openEditPanel(id) {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: min(600px, 90vw);
+        width: min(480px, 90vw);
         max-height: 85vh;
         background: #fff;
         border-radius: 12px;
@@ -30,262 +30,192 @@ async function openEditPanel(id) {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         z-index: 2147483648;
         overflow: hidden;
-        font-size: 15px;
+        font-size: 14px;
         display: none;
       }
       #macro-edit-panel.visible { display: block; }
       .me-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 16px 20px;
+        padding: 12px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: move;
         user-select: none;
       }
-      .me-title { font-weight: 600; font-size: 17px; }
+      .me-title { font-weight: 600; font-size: 14px; }
       .me-close {
         background: rgba(255,255,255,0.2);
         border: none;
         color: white;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: 18px;
+        font-size: 16px;
         line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
       }
-      .me-close:hover { background: rgba(255,255,255,0.3); }
-      .me-body { padding: 20px; overflow-y: auto; max-height: calc(85vh - 130px); }
-      .me-section { margin-bottom: 24px; }
-      .me-section-title {
-        font-size: 14px;
+      .me-close:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
+      .me-body { padding: 16px; overflow-y: auto; max-height: calc(85vh - 110px); }
+      .me-section { margin-bottom: 16px; }
+      .me-section:last-child { margin-bottom: 0; }
+      .me-section-label {
+        font-size: 11px;
         font-weight: 600;
-        color: #666;
-        margin-bottom: 10px;
+        color: #999;
+        margin-bottom: 6px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
       }
       .me-name-input {
         width: 100%;
-        padding: 12px;
-        border: 2px solid #ddd;
+        padding: 10px 12px;
+        border: 2px solid #e0e0e0;
         border-radius: 8px;
-        font-size: 15px;
-        font-weight: 500;
-        transition: border-color 0.2s;
+        font-size: 14px;
+        font-weight: 600;
+        transition: border-color 0.15s;
       }
-      .me-name-input:focus {
-        outline: none;
-        border-color: #667eea;
-      }
+      .me-name-input:focus { outline: none; border-color: #667eea; }
       .me-actions-list {
-        background: #f9f9f9;
+        background: #fafafa;
         border-radius: 8px;
-        padding: 12px;
-        max-height: 300px;
+        padding: 8px;
+        max-height: 240px;
         overflow-y: auto;
       }
       .me-action-item {
         background: white;
         border-radius: 6px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        border: 1px solid #eee;
-      }
-      .me-action-row {
+        padding: 8px 10px;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
+        border: 1px solid #eee;
+        transition: border-color 0.15s;
       }
-      .me-action-number {
+      .me-action-item:hover { border-color: #ddd; }
+      .me-action-item:last-child { margin-bottom: 0; }
+      .me-action-num {
         background: #667eea;
         color: white;
-        width: 28px;
-        height: 28px;
+        min-width: 22px;
+        height: 22px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 600;
-        flex-shrink: 0;
       }
-      .me-action-info {
+      .me-action-text {
         flex: 1;
-        font-size: 13px;
-        color: #666;
-      }
-      .me-delay-label {
         font-size: 12px;
-        color: #999;
-        margin-right: 6px;
+        color: #666;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      .me-delay-input {
-        width: 80px;
-        padding: 6px 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 13px;
-        text-align: center;
-      }
-      .me-delay-input:focus {
-        outline: none;
-        border-color: #667eea;
-      }
-      .me-position-inputs {
+      .me-action-coords {
         display: flex;
-        gap: 8px;
         align-items: center;
-      }
-      .me-position-input {
-        width: 70px;
-        padding: 6px 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 13px;
-        text-align: center;
-      }
-      .me-position-input:focus {
-        outline: none;
-        border-color: #667eea;
-      }
-      .me-position-label {
+        gap: 4px;
         font-size: 11px;
         color: #999;
-        font-weight: 600;
       }
-      .me-combine-select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-        background: white;
-        cursor: pointer;
-        margin-bottom: 10px;
+      .me-coord-input {
+        width: 48px;
+        padding: 4px 6px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 11px;
+        text-align: center;
+        transition: border-color 0.15s;
       }
-      .me-combine-select:focus {
-        outline: none;
-        border-color: #667eea;
-      }
-      .me-combine-delay {
+      .me-coord-input:focus { outline: none; border-color: #667eea; }
+      .me-delay-chip {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .me-combine-delay label {
-        font-size: 14px;
+        gap: 2px;
+        background: #f5f5f5;
+        padding: 4px 6px;
+        border-radius: 4px;
+        font-size: 11px;
         color: #666;
       }
-      .me-combine-delay input {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
+      .me-delay-input {
+        width: 50px;
+        padding: 4px 6px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 11px;
+        text-align: center;
+        transition: border-color 0.15s;
       }
-      .me-btn-add-macro {
-        background: #03a9f4;
-        color: white;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
+      .me-delay-input:focus { outline: none; border-color: #667eea; }
+      .me-combine-select {
         width: 100%;
-        margin-top: 10px;
+        padding: 8px 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+        cursor: pointer;
       }
-      .me-btn-add-macro:hover {
-        background: #0288d1;
-      }
+      .me-combine-select:focus { outline: none; border-color: #667eea; }
       .me-combined-item {
         background: #e3f2fd;
         border: 1px solid #90caf9;
         border-radius: 6px;
-        padding: 10px 12px;
-        margin-top: 8px;
+        padding: 8px 10px;
+        margin-top: 6px;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-      .me-combined-name {
-        font-size: 14px;
-        color: #1565c0;
-        font-weight: 500;
-      }
-      .me-btn-remove-combined {
-        background: #f44336;
-        color: white;
+      .me-combined-name { font-size: 13px; color: #1565c0; font-weight: 500; }
+      .me-combined-controls { display: flex; gap: 8px; align-items: center; }
+      .me-btn-remove {
+        background: none;
         border: none;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 12px;
+        color: #f44336;
+        font-size: 16px;
         cursor: pointer;
+        padding: 2px;
+        line-height: 1;
       }
+      .me-btn-remove:hover { transform: scale(1.1); }
       .me-footer {
-        padding: 16px 20px;
+        padding: 12px 16px;
         border-top: 1px solid #eee;
         display: flex;
-        gap: 10px;
+        gap: 8px;
         background: #fafafa;
       }
       .me-btn {
         flex: 1;
-        padding: 12px 20px;
+        padding: 10px 16px;
         border: none;
         border-radius: 8px;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s;
-      }
-      .me-btn-cancel {
-        background: #e0e0e0;
-        color: #666;
-      }
-      .me-btn-cancel:hover {
-        background: #d5d5d5;
-      }
-      .me-btn-save {
-        background: #4caf50;
-        color: white;
-      }
-      .me-btn-save:hover {
-        background: #45a049;
-      }
-      .me-loop-settings {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .me-loop-field {
+        transition: all 0.15s;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         gap: 6px;
       }
-      .me-loop-field label {
-        font-size: 13px;
-        color: #666;
-        font-weight: 500;
-      }
-      .me-loop-input {
-        padding: 10px 12px;
-        border: 2px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        text-align: center;
-      }
-      .me-loop-input:focus {
-        outline: none;
-        border-color: #667eea;
-      }
+      .me-btn-cancel { background: #e0e0e0; color: #666; }
+      .me-btn-cancel:hover { background: #d5d5d5; }
+      .me-btn-save { background: #4caf50; color: white; }
+      .me-btn-save:hover { background: #43a047; transform: scale(1.02); }
     `;
     document.head.appendChild(editStyle);
   }
@@ -293,25 +223,22 @@ async function openEditPanel(id) {
   // Build actions list HTML
   let actionsHTML = macro.actions.map((action, index) => {
     const delay = index === 0 ? 0 : (action.timestamp - macro.actions[index - 1].timestamp);
+    const text = action.text ? action.text.slice(0, 20) : 'Click';
     return `
       <div class="me-action-item">
-        <div class="me-action-row">
-          <div class="me-action-number">${index + 1}</div>
-          <div class="me-action-info" style="flex: 1;">
-            ${action.text ? `${action.text.slice(0, 30)}${action.text.length > 30 ? '...' : ''}` : 'Click'}
+        <div class="me-action-num">${index + 1}</div>
+        <div class="me-action-text" title="${action.text || 'Click'}">${text}</div>
+        <div class="me-action-coords">
+          <input type="number" class="me-coord-input me-x-input" data-index="${index}" value="${Math.round(action.x)}" min="0" title="X">
+          <span>,</span>
+          <input type="number" class="me-coord-input me-y-input" data-index="${index}" value="${Math.round(action.y)}" min="0" title="Y">
+        </div>
+        ${index > 0 ? `
+          <div class="me-delay-chip">
+            <span>+</span>
+            <input type="number" class="me-delay-input" data-index="${index}" value="${delay}" min="0" title="Delay (ms)">
           </div>
-          ${index > 0 ? `
-            <span class="me-delay-label">Delay:</span>
-            <input type="number" class="me-delay-input" data-index="${index}" value="${delay}" min="0">
-            <span style="font-size: 12px; color: #999;">ms</span>
-          ` : '<span style="font-size: 12px; color: #999;">First click</span>'}
-        </div>
-        <div class="me-position-inputs">
-          <span class="me-position-label">X:</span>
-          <input type="number" class="me-position-input me-x-input" data-index="${index}" value="${Math.round(action.x)}" min="0">
-          <span class="me-position-label">Y:</span>
-          <input type="number" class="me-position-input me-y-input" data-index="${index}" value="${Math.round(action.y)}" min="0">
-        </div>
+        ` : ''}
       </div>
     `;
   }).join('');
@@ -324,17 +251,16 @@ async function openEditPanel(id) {
 
   editPanel.innerHTML = `
     <div class="me-header">
-      <span class="me-title">🦊 Edit Macro</span>
+      <span class="me-title">✎ Edit</span>
       <button class="me-close" id="me-close">×</button>
     </div>
     <div class="me-body">
       <div class="me-section">
-        <div class="me-section-title">Macro Name</div>
-        <input type="text" class="me-name-input" id="me-name-input" value="${macro.name}">
+        <input type="text" class="me-name-input" id="me-name-input" value="${macro.name}" placeholder="Macro name">
       </div>
 
       <div class="me-section">
-        <div class="me-section-title">Actions Timeline (${macro.actions.length} clicks)</div>
+        <div class="me-section-label">${macro.actions.length} actions</div>
         <div class="me-actions-list">
           ${actionsHTML}
         </div>
@@ -342,9 +268,9 @@ async function openEditPanel(id) {
 
       ${otherMacros.length > 0 ? `
       <div class="me-section">
-        <div class="me-section-title">Combine with Other Macros</div>
+        <div class="me-section-label">Combine</div>
         <select class="me-combine-select" id="me-combine-select">
-          <option value="">Select a macro to combine...</option>
+          <option value="">+ Add macro...</option>
           ${combineOptionsHTML}
         </select>
         <div id="me-combined-list"></div>
@@ -352,8 +278,8 @@ async function openEditPanel(id) {
       ` : ''}
     </div>
     <div class="me-footer">
-      <button class="me-btn me-btn-cancel" id="me-cancel">Cancel</button>
-      <button class="me-btn me-btn-save" id="me-save">Save Changes</button>
+      <button class="me-btn me-btn-cancel" id="me-cancel">×</button>
+      <button class="me-btn me-btn-save" id="me-save">✓ Save</button>
     </div>
   `;
 
@@ -399,17 +325,19 @@ async function openEditPanel(id) {
     combinedList.innerHTML = combinedMacros.map((cm, idx) => `
       <div class="me-combined-item">
         <span class="me-combined-name">${cm.name}</span>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="number" class="me-delay-input" data-combined-index="${idx}"
-                 value="${cm.delay}" min="0" placeholder="Delay (ms)">
-          <span style="font-size: 12px; color: #666;">ms before</span>
-          <button class="me-btn-remove-combined" data-combined-index="${idx}">×</button>
+        <div class="me-combined-controls">
+          <div class="me-delay-chip">
+            <span>+</span>
+            <input type="number" class="me-delay-input" data-combined-index="${idx}"
+                   value="${cm.delay}" min="0" title="Delay before (ms)">
+          </div>
+          <button class="me-btn-remove" data-combined-index="${idx}" title="Remove">×</button>
         </div>
       </div>
     `).join('');
 
     // Bind remove buttons
-    combinedList.querySelectorAll('.me-btn-remove-combined').forEach(btn => {
+    combinedList.querySelectorAll('.me-btn-remove').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.dataset.combinedIndex);
         combinedMacros.splice(idx, 1);

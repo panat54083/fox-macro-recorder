@@ -5,18 +5,20 @@ async function playMacro(id, playBtn) {
   const macro = result.macros.find(m => m.id === id);
   if (macro) {
     const statusEl = document.getElementById('mr-status');
+    const statusText = statusEl.querySelector('.mr-status-text');
     const loopCount = macro.loopCount || 1;
     const loopDelay = macro.loopDelay || 0;
 
     isPlaying = true;
     shouldStopPlayback = false;
-    statusEl.textContent = 'Playing...';
+    statusText.textContent = 'PLAY';
     statusEl.className = 'mr-status playing';
 
     // Change button to Stop
     if (playBtn) {
-      playBtn.textContent = 'Stop';
-      playBtn.className = 'mr-btn mr-btn-stop-macro';
+      playBtn.textContent = '⏹';
+      playBtn.className = 'mr-action-btn mr-btn-stop-macro';
+      playBtn.title = 'Stop';
     }
 
     // Loop through the macro the specified number of times
@@ -35,22 +37,23 @@ async function playMacro(id, playBtn) {
           actualLoopDelay += randomDelay;
         }
 
-        if (statusEl) {
-          statusEl.textContent = `⏸ Waiting ${actualLoopDelay}ms before loop ${loop + 2}/${loopCount}...`;
+        if (statusText) {
+          statusText.textContent = `⏸ ${loop + 2}/${loopCount}`;
         }
         await new Promise(resolve => setTimeout(resolve, actualLoopDelay));
       }
     }
 
     isPlaying = false;
-    statusEl.textContent = shouldStopPlayback ? 'Stopped' : 'Ready';
+    statusText.textContent = shouldStopPlayback ? 'Stopped' : 'Ready';
     statusEl.className = 'mr-status';
     shouldStopPlayback = false;
 
     // Change button back to Play
     if (playBtn) {
-      playBtn.textContent = 'Play';
-      playBtn.className = 'mr-btn mr-btn-play';
+      playBtn.textContent = '▶';
+      playBtn.className = 'mr-action-btn mr-btn-play';
+      playBtn.title = 'Play';
     }
   }
 }
@@ -136,11 +139,12 @@ async function playActions(actions, currentLoop = 1, totalLoops = 1) {
 
     // Update status with progress
     const statusEl = document.getElementById('mr-status');
-    if (statusEl && !shouldStopPlayback) {
+    const statusText = statusEl?.querySelector('.mr-status-text');
+    if (statusText && !shouldStopPlayback) {
       if (totalLoops > 1) {
-        statusEl.textContent = `🔄 Loop ${currentLoop}/${totalLoops} • Click ${i + 1}/${actions.length}`;
+        statusText.textContent = `${currentLoop}/${totalLoops} · ${i + 1}/${actions.length}`;
       } else {
-        statusEl.textContent = `Playing ${i + 1}/${actions.length}...`;
+        statusText.textContent = `${i + 1}/${actions.length}`;
       }
     }
 

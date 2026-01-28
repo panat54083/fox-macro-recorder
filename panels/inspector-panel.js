@@ -1,3 +1,5 @@
+// Toggle inspector panel
+function toggleInspector() {
   const inspectorBtn = document.getElementById('mr-inspector-btn');
 
   if (isInspectorActive) {
@@ -55,127 +57,106 @@ function createSettingsPanel() {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: min(400px, 90vw);
-      max-height: 60vh;
+      width: min(280px, 90vw);
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 12px 48px rgba(0,0,0,0.3);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       z-index: 2147483648;
       overflow: hidden;
-      font-size: 15px;
+      font-size: 14px;
       display: none;
     }
     #settings-panel.visible { display: block; }
     .settings-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 14px 18px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: move;
       user-select: none;
     }
-    .settings-title { font-weight: 600; font-size: 16px; }
+    .settings-title { font-weight: 600; font-size: 14px; }
     .settings-close {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
       border: none;
       color: white;
-      width: 32px;
-      height: 32px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 24px;
+      font-size: 16px;
       line-height: 1;
-      transition: all 0.2s;
+      transition: all 0.15s;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .settings-close:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-    .settings-body { padding: 20px; overflow-y: auto; max-height: calc(60vh - 70px); }
-    .settings-section {
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #eee;
-    }
-    .settings-section:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-    .settings-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .settings-random-delay {
-      padding: 16px;
-      background: #f0f7ff;
-      border-radius: 8px;
-      border: 1px solid #667eea33;
-    }
-    .settings-checkbox-label {
+    .settings-close:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+    .settings-body { padding: 14px; }
+    .settings-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      font-size: 15px;
-      color: #333;
-      font-weight: 500;
-      margin-bottom: 14px;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #fafafa;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
-    .settings-checkbox {
+    .settings-row:last-child { margin-bottom: 0; }
+    .settings-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+    .settings-label-icon { font-size: 16px; }
+    .settings-toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #ddd;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .settings-toggle.active { background: #667eea; }
+    .settings-toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
       width: 20px;
       height: 20px;
-      cursor: pointer;
-      accent-color: #667eea;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
     }
-    .settings-delay-range {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-left: 30px;
-    }
-    .settings-delay-field {
+    .settings-toggle.active .settings-toggle-knob { transform: translateX(20px); }
+    .settings-range {
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-    .settings-delay-label {
-      font-size: 14px;
-      color: #666;
-      min-width: 80px;
-      font-weight: 500;
-    }
-    .settings-delay-input {
-      flex: 1;
+      gap: 8px;
       padding: 10px 12px;
-      border: 2px solid #ddd;
+      background: #fafafa;
+      border-radius: 8px;
+    }
+    .settings-range-input {
+      width: 56px;
+      padding: 6px 8px;
+      border: 1px solid #e0e0e0;
       border-radius: 6px;
-      font-size: 14px;
-      text-align: center;
-      transition: border-color 0.2s;
-    }
-    .settings-delay-input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    .settings-delay-unit {
-      color: #666;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .settings-help-text {
       font-size: 13px;
-      color: #999;
-      margin-top: 10px;
-      line-height: 1.5;
+      text-align: center;
+      transition: border-color 0.15s;
     }
+    .settings-range-input:focus { outline: none; border-color: #667eea; }
+    .settings-range-sep { color: #999; font-size: 12px; }
+    .settings-range-unit { color: #999; font-size: 12px; }
   `;
   document.head.appendChild(settingsStyle);
 
@@ -185,29 +166,20 @@ function createSettingsPanel() {
       <button class="settings-close" id="settings-close">×</button>
     </div>
     <div class="settings-body">
-      <div class="settings-section">
-        <div class="settings-section-title">Random Delay</div>
-        <div class="settings-random-delay">
-          <label class="settings-checkbox-label">
-            <input type="checkbox" id="settings-random-delay-toggle" class="settings-checkbox">
-            <span>Enable Random Delay</span>
-          </label>
-          <div class="settings-delay-range">
-            <div class="settings-delay-field">
-              <span class="settings-delay-label">Minimum:</span>
-              <input type="number" id="settings-delay-min" class="settings-delay-input" value="100" min="0" max="10000" placeholder="Min">
-              <span class="settings-delay-unit">ms</span>
-            </div>
-            <div class="settings-delay-field">
-              <span class="settings-delay-label">Maximum:</span>
-              <input type="number" id="settings-delay-max" class="settings-delay-input" value="500" min="0" max="10000" placeholder="Max">
-              <span class="settings-delay-unit">ms</span>
-            </div>
-          </div>
-          <div class="settings-help-text">
-            When enabled, a random delay between the min and max values will be added to each click during playback. This helps make automated clicks appear more natural.
-          </div>
+      <div class="settings-row">
+        <div class="settings-label">
+          <span class="settings-label-icon">🎲</span>
+          <span>Random Delay</span>
         </div>
+        <div class="settings-toggle" id="settings-random-delay-toggle" title="Add random delays between clicks">
+          <div class="settings-toggle-knob"></div>
+        </div>
+      </div>
+      <div class="settings-range" title="Min and max delay range (ms)">
+        <input type="number" id="settings-delay-min" class="settings-range-input" value="100" min="0" max="10000">
+        <span class="settings-range-sep">—</span>
+        <input type="number" id="settings-delay-max" class="settings-range-input" value="500" min="0" max="10000">
+        <span class="settings-range-unit">ms</span>
       </div>
     </div>
   `;
@@ -223,10 +195,11 @@ function createSettingsPanel() {
     toggleSettings();
   });
 
-  // Random delay toggle
+  // Random delay toggle (custom toggle switch)
   const randomDelayToggle = document.getElementById('settings-random-delay-toggle');
-  randomDelayToggle.addEventListener('change', async () => {
-    isRandomDelayEnabled = randomDelayToggle.checked;
+  randomDelayToggle.addEventListener('click', async () => {
+    isRandomDelayEnabled = !isRandomDelayEnabled;
+    randomDelayToggle.classList.toggle('active', isRandomDelayEnabled);
     await chrome.storage.local.set({ randomDelayEnabled: isRandomDelayEnabled });
   });
 
@@ -262,87 +235,254 @@ function createInspectorPanel() {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: min(400px, 90vw);
-      max-height: 60vh;
+      width: min(280px, 90vw);
+      max-height: 50vh;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       z-index: 2147483647;
       overflow: hidden;
-      font-size: 14px;
+      font-size: 13px;
       display: none;
     }
     #inspector-panel.visible { display: block; }
     .insp-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 14px 18px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: move;
       user-select: none;
     }
-    .insp-title { font-weight: 600; font-size: 16px; }
+    .insp-title { font-weight: 600; font-size: 14px; }
     .insp-close {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
       border: none;
       color: white;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1;
-    }
-    .insp-close:hover { background: rgba(255,255,255,0.3); }
-    .insp-body { padding: 16px; overflow-y: auto; max-height: calc(60vh - 120px); }
-    .insp-current {
-      background: #f0f7ff;
-      border: 2px solid #667eea;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
-    }
-    .insp-current-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #667eea;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-    .insp-data-row {
       display: flex;
-      gap: 12px;
-      margin-bottom: 6px;
-      font-size: 13px;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
     }
-    .insp-label {
+    .insp-close:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+    .insp-body { padding: 12px; overflow-y: auto; max-height: calc(50vh - 50px); }
+    .insp-current {
+      background: #f5f7ff;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .insp-coords {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
       font-weight: 600;
-      color: #666;
-      min-width: 70px;
-    }
-    .insp-value {
-      color: #333;
-      font-family: 'Courier New', monospace;
-    }
-    .insp-element {
       color: #667eea;
-      font-weight: 500;
-      word-break: break-all;
+      font-family: 'SF Mono', 'Courier New', monospace;
     }
-    .insp-snapshots {
-      margin-top: 16px;
+    .insp-coords-icon { font-size: 12px; }
+    .insp-element-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .insp-element-tag { color: #667eea; font-weight: 500; }
+    .insp-element-id { color: #e91e63; }
+    .insp-empty { color: #bbb; font-size: 12px; text-align: center; padding: 12px; }
+    .insp-snapshots { margin-top: 8px; }
     .insp-snapshots-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
-    .insp-snapshots-title {
-      font-size: 13px;
+    .insp-snapshots-label {
+      font-size: 11px;
       font-weight: 600;
-      color: #666;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .insp-clear-btn {
+      background: none;
+      border: none;
+      color: #f44336;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .insp-clear-btn:hover { text-decoration: underline; }
+    .insp-snapshot-list {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .insp-snapshot-item {
+      background: #fafafa;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .insp-snapshot-item:last-child { margin-bottom: 0; }
+    .insp-snap-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: #667eea;
+      min-width: 20px;
+    }
+    .insp-snap-coords {
+      font-size: 12px;
+      font-family: 'SF Mono', 'Courier New', monospace;
+      color: #333;
+    }
+    .insp-snap-time {
+      font-size: 10px;
+      color: #999;
+    }
+  `;
+  document.head.appendChild(inspectorStyle);
+
+  updateInspectorPanel(null);
+
+  // Make panel draggable (called once after initial creation)
+  makeDraggable(inspectorPanel, inspectorPanel.querySelector('.insp-header'));
+}
+
+// Track mouse position
+function trackMousePosition(e) {
+  if (!isInspectorActive) return;
+
+  // Don't track if over any extension panels (inspector, main, or edit panel)
+  if (e.target.closest('#inspector-panel') ||
+      e.target.closest('#macro-recorder-panel') ||
+      e.target.closest('#macro-edit-panel')) {
+    return;
+  }
+
+  const element = e.target;
+
+  const data = {
+    x: e.clientX,
+    y: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
+    element: element.tagName.toLowerCase(),
+    elementId: element.id || '(none)',
+    elementClass: element.className || '(none)',
+    elementText: element.textContent?.slice(0, 50) || '(empty)'
+  };
+
+  updateInspectorPanel(data);
+}
+
+// Capture snapshot
+function captureSnapshot(e) {
+  if (!isInspectorActive) return;
+
+  // Ignore clicks on any extension panels (inspector, main, or edit panel)
+  if (e.target.closest('#inspector-panel') ||
+      e.target.closest('#macro-recorder-panel') ||
+      e.target.closest('#macro-edit-panel')) {
+    return;
+  }
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  const element = e.target;
+
+  const snapshot = {
+    time: new Date().toLocaleTimeString(),
+    x: e.clientX,
+    y: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
+    element: element.tagName.toLowerCase(),
+    elementId: element.id || '(none)',
+    elementClass: element.className || '(none)',
+    elementText: element.textContent?.slice(0, 30) || '(empty)'
+  };
+
+  inspectorSnapshots.push(snapshot);
+  updateInspectorPanel(null);
+}
+
+// Update inspector panel
+function updateInspectorPanel(currentData) {
+  if (!inspectorPanel) return;
+
+  const elementInfo = currentData ?
+    `<span class="insp-element-tag">&lt;${currentData.element}&gt;</span>${currentData.elementId !== '(none)' ? `<span class="insp-element-id">#${currentData.elementId}</span>` : ''}` : '';
+
+  const currentHtml = currentData ? `
+    <div class="insp-current">
+      <div class="insp-coords">
+        <span class="insp-coords-icon">✛</span>
+        <span>${currentData.x}, ${currentData.y}</span>
+      </div>
+      <div class="insp-element-info" title="${currentData.elementText}">${elementInfo}</div>
+    </div>
+  ` : `
+    <div class="insp-current">
+      <div class="insp-empty">Move mouse to track position</div>
+    </div>
+  `;
+
+  const snapshotsHtml = inspectorSnapshots.length > 0 ?
+    inspectorSnapshots.map((snap, idx) => `
+      <div class="insp-snapshot-item">
+        <span class="insp-snap-num">${idx + 1}</span>
+        <span class="insp-snap-coords">${snap.x}, ${snap.y}</span>
+        <span class="insp-snap-time">${snap.time}</span>
+      </div>
+    `).join('') : '<div class="insp-empty">Click to capture snapshots</div>';
+
+  inspectorPanel.innerHTML = `
+    <div class="insp-header">
+      <span class="insp-title">🔍 Inspector</span>
+      <button class="insp-close" id="insp-close">×</button>
+    </div>
+    <div class="insp-body">
+      ${currentHtml}
+      <div class="insp-snapshots">
+        <div class="insp-snapshots-header">
+          <span class="insp-snapshots-label">Snapshots</span>
+          ${inspectorSnapshots.length > 0 ? '<button class="insp-clear-btn" id="insp-clear">Clear</button>' : ''}
+        </div>
+        <div class="insp-snapshot-list">
+          ${snapshotsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Bind close button
+  document.getElementById('insp-close').addEventListener('click', () => {
+    toggleInspector();
+  });
+
+  // Bind clear button if it exists
+  const clearBtn = document.getElementById('insp-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      inspectorSnapshots = [];
+      updateInspectorPanel(null);
+    });
+  }
+}

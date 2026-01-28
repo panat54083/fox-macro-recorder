@@ -1,5 +1,11 @@
 // Main panel creation and management
 
+// Helper to format duration
+function formatDuration(ms) {
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+
 // Create floating panel
 function createPanel() {
   if (panel) return;
@@ -8,28 +14,25 @@ function createPanel() {
   panel.id = 'macro-recorder-panel';
   panel.innerHTML = `
     <div class="mr-header">
-      <span class="mr-title">🦊 Fox Macro Recorder</span>
+      <span class="mr-title">🦊 Fox Macro</span>
       <div class="mr-header-actions">
-        <button class="mr-inspector-btn" id="mr-inspector-btn" title="Position Inspector">🔍</button>
-        <button class="mr-settings-btn" id="mr-settings-btn" title="Settings">⚙️</button>
-        <button class="mr-collapse-btn" id="mr-collapse-btn" title="Collapse Panel">−</button>
-        <button class="mr-close-btn" id="mr-close-btn" title="Close Panel">×</button>
+        <button class="mr-icon-btn" id="mr-inspector-btn" title="Inspector">🔍</button>
+        <button class="mr-icon-btn" id="mr-settings-btn" title="Settings">⚙️</button>
+        <button class="mr-icon-btn" id="mr-collapse-btn" title="Minimize">−</button>
+        <button class="mr-icon-btn" id="mr-close-btn" title="Close">×</button>
       </div>
     </div>
     <div class="mr-body">
-      <div class="mr-status" id="mr-status">Ready</div>
+      <div class="mr-status" id="mr-status"><span class="mr-status-dot"></span><span class="mr-status-text">Ready</span></div>
       <div class="mr-controls">
-        <button class="mr-btn mr-btn-record" id="mr-record">Record</button>
-        <button class="mr-btn mr-btn-stop" id="mr-stop" disabled>Stop</button>
+        <button class="mr-ctrl-btn mr-btn-record" id="mr-record" title="Start Recording">⏺</button>
+        <button class="mr-ctrl-btn mr-btn-stop" id="mr-stop" title="Stop" disabled>⏹</button>
       </div>
       <div class="mr-save" id="mr-save" style="display: none;">
         <input type="text" id="mr-name" placeholder="Macro name...">
-        <button class="mr-btn mr-btn-save" id="mr-save-btn">Save</button>
+        <button class="mr-save-btn" id="mr-save-btn" title="Save">✓</button>
       </div>
       <div class="mr-macros">
-        <div class="mr-macros-header">
-          <span>Saved Macros</span>
-        </div>
         <div class="mr-macros-list" id="mr-macros-list">
           <div class="mr-empty">No macros saved</div>
         </div>
@@ -44,7 +47,7 @@ function createPanel() {
       position: fixed;
       top: 20px;
       right: 20px;
-      width: min(400px, 90vw);
+      width: min(340px, 90vw);
       max-height: 80vh;
       background: #fff;
       border-radius: 12px;
@@ -52,7 +55,7 @@ function createPanel() {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       z-index: 2147483647;
       overflow: hidden;
-      font-size: 15px;
+      font-size: 14px;
     }
     #macro-recorder-panel.hidden { display: none; }
     #macro-recorder-panel.minimized .mr-body { display: none; }
@@ -60,202 +63,160 @@ function createPanel() {
     .mr-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 14px 18px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: move;
       user-select: none;
     }
-    .mr-title { font-weight: 600; font-size: 16px; }
-    .mr-header-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .mr-inspector-btn {
-      background: rgba(255,255,255,0.2);
+    .mr-title { font-weight: 600; font-size: 14px; }
+    .mr-header-actions { display: flex; gap: 4px; align-items: center; }
+    .mr-icon-btn {
+      background: rgba(255,255,255,0.15);
       border: none;
       color: white;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
-      transition: all 0.2s;
+      font-size: 14px;
+      transition: all 0.15s;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .mr-inspector-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-    .mr-inspector-btn.active { background: rgba(255,255,255,0.4); }
-    .mr-settings-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .mr-settings-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-    .mr-settings-btn.active { background: rgba(255,255,255,0.4); }
-    .mr-collapse-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 24px;
-      line-height: 1;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-    .mr-collapse-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-    .mr-close-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 24px;
-      line-height: 0;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-    .mr-close-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-    .mr-minimize {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-    }
-    .mr-minimize:hover { background: rgba(255,255,255,0.3); }
-    .mr-body { padding: 16px; overflow-y: auto; max-height: calc(80vh - 60px); }
+    .mr-icon-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+    .mr-icon-btn.active { background: rgba(255,255,255,0.35); }
+    .mr-body { padding: 12px; overflow-y: auto; max-height: calc(80vh - 50px); }
     .mr-status {
-      text-align: center;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
       font-weight: 500;
-      font-size: 15px;
-      background: #f0f0f0;
+      font-size: 13px;
+      background: #f5f5f5;
       color: #666;
     }
-    .mr-status.recording {
-      background: #ffebee;
-      color: #c62828;
-      animation: mr-pulse 1.5s infinite;
+    .mr-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9e9e9e;
     }
+    .mr-status.recording { background: #ffebee; color: #c62828; }
+    .mr-status.recording .mr-status-dot { background: #ef5350; animation: mr-pulse-dot 1s infinite; }
     .mr-status.playing { background: #e3f2fd; color: #1565c0; }
-    @keyframes mr-pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-    .mr-controls { display: flex; gap: 10px; margin-bottom: 14px; }
-    .mr-btn {
-      flex: 1;
-      padding: 12px 16px;
+    .mr-status.playing .mr-status-dot { background: #2196f3; animation: mr-pulse-dot 1s infinite; }
+    @keyframes mr-pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .mr-controls { display: flex; gap: 8px; margin-bottom: 10px; justify-content: center; }
+    .mr-ctrl-btn {
+      width: 52px;
+      height: 52px;
       border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
+      border-radius: 50%;
+      font-size: 22px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .mr-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .mr-ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
     .mr-btn-record { background: #ef5350; color: white; }
-    .mr-btn-record:hover:not(:disabled) { background: #e53935; }
+    .mr-btn-record:hover:not(:disabled) { background: #e53935; transform: scale(1.08); }
     .mr-btn-stop { background: #757575; color: white; }
-    .mr-btn-stop:hover:not(:disabled) { background: #616161; }
-    .mr-btn-save { background: #4caf50; color: white; }
-    .mr-btn-play { background: #2196f3; color: white; padding: 8px 14px; font-size: 13px; }
-    .mr-btn-edit { background: #9c27b0; color: white; padding: 8px 14px; font-size: 13px; }
-    .mr-btn-export { background: #ff9800; color: white; padding: 8px 14px; font-size: 13px; }
-    .mr-btn-delete { background: #f44336; color: white; padding: 8px 14px; font-size: 13px; }
-    .mr-btn-import { background: #9c27b0; color: white; width: 100%; }
-    .mr-btn-stop-macro { background: #ff5722; color: white; padding: 8px 14px; font-size: 13px; }
-    .mr-save { display: flex; gap: 10px; margin-bottom: 14px; }
+    .mr-btn-stop:hover:not(:disabled) { background: #616161; transform: scale(1.08); }
+    .mr-save { display: flex; gap: 8px; margin-bottom: 10px; }
     .mr-save input {
       flex: 1;
-      padding: 12px;
-      border: 1px solid #ddd;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 14px;
+      transition: border-color 0.15s;
     }
     .mr-save input:focus { outline: none; border-color: #4caf50; }
-    .mr-macros {
-      background: #f9f9f9;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 14px;
+    .mr-save-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .mr-macros-header { font-size: 14px; color: #666; margin-bottom: 10px; font-weight: 600; }
-    .mr-macros-list { max-height: 250px; overflow-y: auto; }
-    .mr-empty { color: #999; font-size: 14px; text-align: center; padding: 20px; }
+    .mr-save-btn:hover { background: #43a047; transform: scale(1.05); }
+    .mr-macros {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .mr-macros-list { max-height: 280px; overflow-y: auto; }
+    .mr-empty { color: #bbb; font-size: 13px; text-align: center; padding: 24px 12px; }
     .mr-macro-item {
       background: white;
       border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
       border: 1px solid #eee;
+      transition: border-color 0.15s;
     }
-    .mr-macro-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-    .mr-macro-name { font-weight: 500; font-size: 15px; }
-    .mr-macro-info { font-size: 13px; color: #999; }
-    .mr-macro-actions { display: flex; gap: 6px; }
-    .mr-loop-controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
-    }
-    .mr-loop-control {
+    .mr-macro-item:hover { border-color: #ddd; }
+    .mr-macro-row { display: flex; justify-content: space-between; align-items: center; }
+    .mr-macro-name { font-weight: 600; font-size: 13px; color: #333; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mr-macro-info { font-size: 11px; color: #999; margin-left: 8px; white-space: nowrap; }
+    .mr-macro-row2 { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+    .mr-macro-actions { display: flex; gap: 4px; }
+    .mr-action-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .mr-action-btn:hover { transform: scale(1.1); }
+    .mr-btn-play { background: #e3f2fd; color: #1976d2; }
+    .mr-btn-play:hover { background: #bbdefb; }
+    .mr-btn-edit { background: #f3e5f5; color: #7b1fa2; }
+    .mr-btn-edit:hover { background: #e1bee7; }
+    .mr-btn-export { background: #fff3e0; color: #f57c00; }
+    .mr-btn-export:hover { background: #ffe0b2; }
+    .mr-btn-delete { background: #ffebee; color: #d32f2f; }
+    .mr-btn-delete:hover { background: #ffcdd2; }
+    .mr-btn-stop-macro { background: #ff5722; color: white; }
+    .mr-loop-controls { display: flex; gap: 8px; align-items: center; }
+    .mr-loop-item {
+      display: flex;
+      align-items: center;
       gap: 4px;
+      font-size: 12px;
+      color: #666;
     }
-    .mr-loop-label {
-      font-size: 11px;
-      color: #999;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .mr-loop-control input {
-      padding: 6px 8px;
-      border: 1px solid #ddd;
+    .mr-loop-item input {
+      width: 40px;
+      padding: 4px 6px;
+      border: 1px solid #e0e0e0;
       border-radius: 4px;
-      font-size: 13px;
+      font-size: 12px;
       text-align: center;
-      transition: border-color 0.2s;
+      transition: border-color 0.15s;
     }
-    .mr-loop-control input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    .mr-import { margin-top: 6px; }
+    .mr-loop-item input:focus { outline: none; border-color: #667eea; }
   `;
 
   document.head.appendChild(style);
@@ -288,7 +249,7 @@ function bindPanelEvents() {
     isRecording = true;
     recordingStartTime = Date.now();
     recordedActions = [];
-    statusEl.textContent = 'Recording...';
+    statusEl.querySelector('.mr-status-text').textContent = 'REC';
     statusEl.className = 'mr-status recording';
     recordBtn.disabled = true;
     stopBtn.disabled = false;
@@ -297,7 +258,7 @@ function bindPanelEvents() {
 
   stopBtn.addEventListener('click', () => {
     isRecording = false;
-    statusEl.textContent = `Recorded ${recordedActions.length} clicks`;
+    statusEl.querySelector('.mr-status-text').textContent = `${recordedActions.length} recorded`;
     statusEl.className = 'mr-status';
     recordBtn.disabled = false;
     stopBtn.disabled = true;
@@ -325,7 +286,7 @@ function bindPanelEvents() {
 
     saveSection.style.display = 'none';
     recordedActions = [];
-    statusEl.textContent = 'Ready';
+    statusEl.querySelector('.mr-status-text').textContent = 'Ready';
     loadMacros();
   });
 
@@ -369,7 +330,7 @@ async function loadRandomDelaySetting() {
   const maxInput = document.getElementById('settings-delay-max');
 
   if (toggle) {
-    toggle.checked = isRandomDelayEnabled;
+    toggle.classList.toggle('active', isRandomDelayEnabled);
   }
   if (minInput) {
     minInput.value = randomDelayMin;

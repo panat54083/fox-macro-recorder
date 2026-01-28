@@ -14,27 +14,30 @@ async function loadMacros() {
     const totalTime = m.actions.length > 0 ? m.actions[m.actions.length - 1].timestamp : 0;
     const loopCount = m.loopCount || 1;
     const loopDelay = m.loopDelay || 0;
+    const duration = formatDuration(totalTime);
 
     return `
     <div class="mr-macro-item" data-id="${m.id}">
-      <div class="mr-macro-header">
+      <div class="mr-macro-row">
         <span class="mr-macro-name">${m.name}</span>
-        <span class="mr-macro-info">${m.actions.length} clicks · ${totalTime}ms total</span>
+        <span class="mr-macro-info">${m.actions.length} · ${duration}</span>
       </div>
-      <div class="mr-macro-actions">
-        <button class="mr-btn mr-btn-play" data-action="play">Play</button>
-        <button class="mr-btn mr-btn-edit" data-action="edit">Edit</button>
-        <button class="mr-btn mr-btn-export" data-action="export">Export</button>
-        <button class="mr-btn mr-btn-delete" data-action="delete">Delete</button>
-      </div>
-      <div class="mr-loop-controls">
-        <div class="mr-loop-control">
-          <label class="mr-loop-label">Loop Count</label>
-          <input type="number" class="mr-loop-count-input" value="${loopCount}" min="1" max="999" data-id="${m.id}">
+      <div class="mr-macro-row2">
+        <div class="mr-macro-actions">
+          <button class="mr-action-btn mr-btn-play" data-action="play" title="Play">▶</button>
+          <button class="mr-action-btn mr-btn-edit" data-action="edit" title="Edit">✎</button>
+          <button class="mr-action-btn mr-btn-export" data-action="export" title="Export">↗</button>
+          <button class="mr-action-btn mr-btn-delete" data-action="delete" title="Delete">×</button>
         </div>
-        <div class="mr-loop-control">
-          <label class="mr-loop-label">Loop Delay (ms)</label>
-          <input type="number" class="mr-loop-delay-input" value="${loopDelay}" min="0" data-id="${m.id}">
+        <div class="mr-loop-controls">
+          <div class="mr-loop-item" title="Loop count">
+            <span>🔁</span>
+            <input type="number" class="mr-loop-count-input" value="${loopCount}" min="1" max="999" data-id="${m.id}">
+          </div>
+          <div class="mr-loop-item" title="Delay between loops (ms)">
+            <span>⏱</span>
+            <input type="number" class="mr-loop-delay-input" value="${loopDelay}" min="0" data-id="${m.id}">
+          </div>
         </div>
       </div>
     </div>

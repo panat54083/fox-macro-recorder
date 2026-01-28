@@ -1,24 +1,24 @@
 const toggleBtn = document.getElementById('toggleBtn');
-const btnIcon = document.getElementById('btnIcon');
-const btnText = document.getElementById('btnText');
-const status = document.getElementById('status');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
 const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
 
 function updateUI(isHidden) {
   if (isHidden) {
-    toggleBtn.className = 'btn btn-show';
-    btnIcon.textContent = '👁';
-    btnText.textContent = 'Show Panel';
-    status.textContent = 'Panel is hidden';
-    status.className = 'status hidden-status';
+    toggleBtn.className = 'btn btn-toggle';
+    statusDot.className = 'status-dot hidden';
+    statusText.textContent = 'Hidden';
   } else {
-    toggleBtn.className = 'btn btn-hide';
-    btnIcon.textContent = '🙈';
-    btnText.textContent = 'Hide Panel';
-    status.textContent = 'Panel is visible on page';
-    status.className = 'status';
+    toggleBtn.className = 'btn btn-toggle active';
+    statusDot.className = 'status-dot visible';
+    statusText.textContent = 'Visible';
   }
+}
+
+function showMessage(msg, isError = false) {
+  statusDot.className = isError ? 'status-dot hidden' : 'status-dot visible';
+  statusText.textContent = msg;
 }
 
 // Get current state on popup open
@@ -27,8 +27,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const response = await chrome.tabs.sendMessage(tabs[0].id, { action: 'getPanelState' });
     updateUI(response.isHidden);
   } catch (e) {
-    status.textContent = 'Refresh page to use';
-    status.className = 'status hidden-status';
+    showMessage('Refresh page', true);
   }
 });
 
@@ -39,8 +38,7 @@ toggleBtn.addEventListener('click', async () => {
     const response = await chrome.tabs.sendMessage(tab.id, { action: 'togglePanel' });
     updateUI(response.isHidden);
   } catch (e) {
-    status.textContent = 'Refresh page to use';
-    status.className = 'status hidden-status';
+    showMessage('Refresh page', true);
   }
 });
 
@@ -81,8 +79,7 @@ importFile.addEventListener('change', async (e) => {
       // Content script might not be loaded
     }
 
-    status.textContent = 'Macro imported!';
-    status.className = 'status';
+    showMessage('Imported!');
 
     // Reset after 2 seconds
     setTimeout(() => {
@@ -91,14 +88,12 @@ importFile.addEventListener('change', async (e) => {
           const response = await chrome.tabs.sendMessage(tabs[0].id, { action: 'getPanelState' });
           updateUI(response.isHidden);
         } catch (e) {
-          status.textContent = 'Refresh page to use';
-          status.className = 'status hidden-status';
+          showMessage('Refresh page', true);
         }
       });
     }, 2000);
   } catch (e) {
-    status.textContent = 'Import failed';
-    status.className = 'status hidden-status';
+    showMessage('Import failed', true);
   }
 
   // Reset file input
