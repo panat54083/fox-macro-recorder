@@ -6,6 +6,10 @@ async function playMacro(id, playBtn) {
   if (macro) {
     const statusEl = document.getElementById('mr-status');
     const statusText = statusEl.querySelector('.mr-status-text');
+    const miniBar = document.querySelector('.mr-mini-bar');
+    const miniStatusText = document.querySelector('.mr-mini-status-text');
+    const miniPlayBtn = document.getElementById('mr-mini-play');
+    const miniMacroSelect = document.getElementById('mr-mini-macro-select');
     const loopCount = macro.loopCount || 1;
     const loopDelay = macro.loopDelay || 0;
 
@@ -13,6 +17,8 @@ async function playMacro(id, playBtn) {
     shouldStopPlayback = false;
     statusText.textContent = 'PLAY';
     statusEl.className = 'mr-status playing';
+    if (miniBar) miniBar.className = 'mr-mini-bar playing';
+    if (miniStatusText) miniStatusText.textContent = 'PLAY';
 
     // Change button to Stop
     if (playBtn) {
@@ -20,6 +26,14 @@ async function playMacro(id, playBtn) {
       playBtn.className = 'mr-action-btn mr-btn-stop-macro';
       playBtn.title = 'Stop';
     }
+    // Update mini play button to stop
+    if (miniPlayBtn) {
+      miniPlayBtn.textContent = '⏹';
+      miniPlayBtn.className = 'mr-mini-btn mr-mini-stop-macro';
+      miniPlayBtn.title = 'Stop';
+    }
+    // Disable dropdown during playback
+    if (miniMacroSelect) miniMacroSelect.disabled = true;
 
     // Loop through the macro the specified number of times
     for (let loop = 0; loop < loopCount; loop++) {
@@ -37,16 +51,19 @@ async function playMacro(id, playBtn) {
           actualLoopDelay += randomDelay;
         }
 
-        if (statusText) {
-          statusText.textContent = `⏸ ${loop + 2}/${loopCount}`;
-        }
+        const pauseText = `⏸ ${loop + 2}/${loopCount}`;
+        if (statusText) statusText.textContent = pauseText;
+        if (miniStatusText) miniStatusText.textContent = pauseText;
         await new Promise(resolve => setTimeout(resolve, actualLoopDelay));
       }
     }
 
     isPlaying = false;
-    statusText.textContent = shouldStopPlayback ? 'Stopped' : 'Ready';
+    const finalStatus = shouldStopPlayback ? 'Stopped' : 'Ready';
+    statusText.textContent = finalStatus;
     statusEl.className = 'mr-status';
+    if (miniBar) miniBar.className = 'mr-mini-bar';
+    if (miniStatusText) miniStatusText.textContent = finalStatus;
     shouldStopPlayback = false;
 
     // Change button back to Play
@@ -55,6 +72,14 @@ async function playMacro(id, playBtn) {
       playBtn.className = 'mr-action-btn mr-btn-play';
       playBtn.title = 'Play';
     }
+    // Reset mini play button
+    if (miniPlayBtn) {
+      miniPlayBtn.textContent = '▶';
+      miniPlayBtn.className = 'mr-mini-btn mr-mini-play';
+      miniPlayBtn.title = 'Play';
+    }
+    // Re-enable dropdown after playback
+    if (miniMacroSelect) miniMacroSelect.disabled = false;
   }
 }
 
@@ -140,12 +165,13 @@ async function playActions(actions, currentLoop = 1, totalLoops = 1) {
     // Update status with progress
     const statusEl = document.getElementById('mr-status');
     const statusText = statusEl?.querySelector('.mr-status-text');
-    if (statusText && !shouldStopPlayback) {
-      if (totalLoops > 1) {
-        statusText.textContent = `${currentLoop}/${totalLoops} · ${i + 1}/${actions.length}`;
-      } else {
-        statusText.textContent = `${i + 1}/${actions.length}`;
-      }
+    const miniStatusText = document.querySelector('.mr-mini-status-text');
+    if (!shouldStopPlayback) {
+      const progressText = totalLoops > 1
+        ? `${currentLoop}/${totalLoops} · ${i + 1}/${actions.length}`
+        : `${i + 1}/${actions.length}`;
+      if (statusText) statusText.textContent = progressText;
+      if (miniStatusText) miniStatusText.textContent = progressText;
     }
 
     await simulateClick(action, delay);

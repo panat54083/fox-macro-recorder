@@ -18,8 +18,22 @@ function createPanel() {
       <div class="mr-header-actions">
         <button class="mr-icon-btn" id="mr-inspector-btn" title="Inspector">🔍</button>
         <button class="mr-icon-btn" id="mr-settings-btn" title="Settings">⚙️</button>
-        <button class="mr-icon-btn" id="mr-collapse-btn" title="Minimize">−</button>
+        <button class="mr-icon-btn" id="mr-collapse-btn" title="Collapse">−</button>
         <button class="mr-icon-btn" id="mr-close-btn" title="Close">×</button>
+      </div>
+    </div>
+    <div class="mr-mini-bar">
+      <div class="mr-mini-status" id="mr-mini-status">
+        <span class="mr-status-dot"></span>
+        <span class="mr-mini-status-text">Ready</span>
+      </div>
+      <div class="mr-mini-controls">
+        <button class="mr-mini-btn mr-mini-record" id="mr-mini-record" title="Record">⏺</button>
+        <button class="mr-mini-btn mr-mini-stop" id="mr-mini-stop" title="Stop" disabled>⏹</button>
+        <select class="mr-mini-select" id="mr-mini-macro-select" title="Select macro">
+          <option value="">No macros</option>
+        </select>
+        <button class="mr-mini-btn mr-mini-play" id="mr-mini-play" title="Play">▶</button>
       </div>
     </div>
     <div class="mr-body">
@@ -71,9 +85,79 @@ function createPanel() {
       flex-direction: column;
     }
     #macro-recorder-panel.hidden { display: none; }
+    #macro-recorder-panel .mr-mini-bar { display: none; }
     #macro-recorder-panel.minimized .mr-body { display: none; }
+    #macro-recorder-panel.minimized .mr-mini-bar { display: flex; }
     #macro-recorder-panel.minimized .mr-resize-handle { display: none; }
     #macro-recorder-panel.minimized { width: auto; min-width: auto; min-height: auto; }
+    #macro-recorder-panel.minimized .mr-header { padding: 8px 12px; }
+    #macro-recorder-panel.minimized .mr-title { font-size: 13px; }
+    .mr-mini-bar {
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #f8f9fa;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+    .mr-mini-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+    }
+    .mr-mini-status .mr-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9e9e9e;
+    }
+    .mr-mini-bar.recording .mr-status-dot { background: #ef5350; animation: mr-pulse-dot 1s infinite; }
+    .mr-mini-bar.recording .mr-mini-status-text { color: #c62828; }
+    .mr-mini-bar.playing .mr-status-dot { background: #2196f3; animation: mr-pulse-dot 1s infinite; }
+    .mr-mini-bar.playing .mr-mini-status-text { color: #1565c0; }
+    .mr-mini-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .mr-mini-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mr-mini-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mr-mini-btn:hover:not(:disabled) { transform: scale(1.1); }
+    .mr-mini-record { background: #ef5350; color: white; }
+    .mr-mini-stop { background: #757575; color: white; }
+    .mr-mini-play { background: #e3f2fd; color: #1976d2; }
+    .mr-mini-play:hover:not(:disabled) { background: #bbdefb; }
+    .mr-mini-stop-macro { background: #ff5722; color: white; }
+    .mr-mini-stop-macro:hover { background: #f4511e; }
+    .mr-mini-select {
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 12px;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      max-width: 120px;
+      text-overflow: ellipsis;
+    }
+    .mr-mini-select:focus { outline: none; border-color: #667eea; }
+    .mr-mini-select:disabled { opacity: 0.5; cursor: not-allowed; }
     #macro-recorder-panel.resizing { transition: none; user-select: none; }
     .mr-resize-handle {
       position: absolute;
@@ -323,33 +407,79 @@ function bindPanelEvents() {
   const nameInput = document.getElementById('mr-name');
   const saveSection = document.getElementById('mr-save');
   const statusEl = document.getElementById('mr-status');
+  const miniBar = panel.querySelector('.mr-mini-bar');
+  const miniStatus = document.getElementById('mr-mini-status');
+  const miniRecordBtn = document.getElementById('mr-mini-record');
+  const miniStopBtn = document.getElementById('mr-mini-stop');
+  const miniPlayBtn = document.getElementById('mr-mini-play');
+  const miniMacroSelect = document.getElementById('mr-mini-macro-select');
   const inspectorBtn = document.getElementById('mr-inspector-btn');
   const settingsBtn = document.getElementById('mr-settings-btn');
   const collapseBtn = document.getElementById('mr-collapse-btn');
   const closeBtn = document.getElementById('mr-close-btn');
 
-  recordBtn.addEventListener('click', () => {
+  // Helper to sync status between main and mini views
+  function updateStatus(text, state, miniText) {
+    statusEl.querySelector('.mr-status-text').textContent = text;
+    // Mini bar shows simplified text (miniText) or same text
+    miniStatus.querySelector('.mr-mini-status-text').textContent = miniText || text;
+    statusEl.className = 'mr-status' + (state ? ' ' + state : '');
+    miniBar.className = 'mr-mini-bar' + (state ? ' ' + state : '');
+  }
+
+  // Helper to sync button states
+  function syncButtons() {
+    miniRecordBtn.disabled = recordBtn.disabled;
+    miniStopBtn.disabled = stopBtn.disabled;
+  }
+
+  function startRecording() {
     isRecording = true;
     recordingStartTime = Date.now();
     recordedActions = [];
-    statusEl.querySelector('.mr-status-text').textContent = 'REC';
-    statusEl.className = 'mr-status recording';
+    updateStatus('REC', 'recording');
     recordBtn.disabled = true;
     stopBtn.disabled = false;
+    syncButtons();
     saveSection.style.display = 'none';
-  });
+  }
 
-  stopBtn.addEventListener('click', () => {
+  function stopRecording() {
     isRecording = false;
-    statusEl.querySelector('.mr-status-text').textContent = `${recordedActions.length} recorded`;
-    statusEl.className = 'mr-status';
+    // Main shows count, mini just shows "Ready"
+    updateStatus(`${recordedActions.length} recorded`, '', 'Ready');
     recordBtn.disabled = false;
     stopBtn.disabled = true;
+    syncButtons();
 
     if (recordedActions.length > 0) {
       saveSection.style.display = 'flex';
       nameInput.value = '';
+      // Expand panel if minimized to show save section
+      if (panel.classList.contains('minimized')) {
+        panel.classList.remove('minimized');
+        collapseBtn.textContent = '−';
+        collapseBtn.title = 'Collapse';
+      }
       nameInput.focus();
+    }
+  }
+
+  recordBtn.addEventListener('click', startRecording);
+  miniRecordBtn.addEventListener('click', startRecording);
+
+  stopBtn.addEventListener('click', stopRecording);
+  miniStopBtn.addEventListener('click', stopRecording);
+
+  // Mini play button - plays selected macro or stops if playing
+  miniPlayBtn.addEventListener('click', async () => {
+    if (isPlaying) {
+      shouldStopPlayback = true;
+    } else {
+      const selectedId = miniMacroSelect.value;
+      if (selectedId) {
+        playMacro(selectedId, null);
+      }
     }
   });
 
@@ -386,10 +516,12 @@ function bindPanelEvents() {
     // Update button icon based on state
     if (panel.classList.contains('minimized')) {
       collapseBtn.textContent = '+';
-      collapseBtn.title = 'Expand Panel';
+      collapseBtn.title = 'Expand';
+      // Update mini play button state
+      updateMiniPlayButton();
     } else {
       collapseBtn.textContent = '−';
-      collapseBtn.title = 'Collapse Panel';
+      collapseBtn.title = 'Collapse';
     }
   });
 
@@ -476,6 +608,28 @@ function setupResizeHandles() {
       document.addEventListener('mouseup', onMouseUp);
     });
   });
+}
+
+async function updateMiniPlayButton() {
+  const miniPlayBtn = document.getElementById('mr-mini-play');
+  const miniMacroSelect = document.getElementById('mr-mini-macro-select');
+  if (!miniPlayBtn || !miniMacroSelect) return;
+
+  const result = await chrome.storage.local.get(['macros']);
+  const macros = result.macros || [];
+
+  // Update dropdown options
+  if (macros.length > 0) {
+    miniMacroSelect.innerHTML = macros.map(m =>
+      `<option value="${m.id}">${m.name}</option>`
+    ).join('');
+    miniMacroSelect.disabled = false;
+    miniPlayBtn.disabled = false;
+  } else {
+    miniMacroSelect.innerHTML = '<option value="">No macros</option>';
+    miniMacroSelect.disabled = true;
+    miniPlayBtn.disabled = true;
+  }
 }
 
 async function loadRandomDelaySetting() {

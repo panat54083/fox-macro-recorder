@@ -5,6 +5,9 @@ async function loadMacros() {
   const result = await chrome.storage.local.get(['macros']);
   const macros = result.macros || [];
 
+  // Update mini play button state
+  updateMiniPlayButton();
+
   if (macros.length === 0) {
     list.innerHTML = '<div class="mr-empty">No macros saved</div>';
     return;
