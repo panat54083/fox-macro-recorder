@@ -2,9 +2,18 @@
 
 > Cleverly record and replay your clicks like a sly fox - automate repetitive tasks with precision!
 
+[![Version](https://img.shields.io/badge/version-1.1.0-blue?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
 [![Vibe Coding Project](https://img.shields.io/badge/vibe-coding%20project-ff69b4?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
 
 **Note:** This is a vibe coding project - built for fun, experimentation, and learning! While it's fully functional, it was created with a focus on exploring ideas and enjoying the development process. 🎨✨
+
+## 🆕 What's New in v1.1.0
+
+- **⚙️ Dedicated Settings Panel**: New floating settings panel for better organization
+- **🎨 Improved UI/UX**: Cleaner main panel with settings separated for clarity
+- **✨ Enhanced Random Delay Config**: More intuitive min/max settings with help text
+- **🏗️ Code Refactoring**: Modular architecture for better maintainability
+- **📚 Better Documentation**: Added comprehensive release notes and refactoring docs
 
 ## Single Purpose
 
@@ -23,6 +32,10 @@ Fox Macro Recorder is a Chrome extension that helps you automate repetitive clic
 - **💾 Save & Manage**: Store multiple macros locally and organize them by name
 - **📤 Export/Import**: Share macros with others or backup your automation workflows as JSON files
 - **🎯 Visual Feedback**: See exactly where clicks are happening with animated effects during playback
+- **⚙️ Settings Panel**: Configure random delays and other options in a dedicated settings interface
+- **🔍 Position Inspector**: Built-in tool to inspect coordinates and element details
+- **✏️ Macro Editor**: Edit click timings, positions, and combine multiple macros
+- **🔄 Loop Controls**: Repeat macros multiple times with custom delays between iterations
 - **⏹️ Full Control**: Start, stop, and manage recordings with an easy-to-use interface
 
 ### Why Should You Install Fox Macro Recorder?
@@ -94,8 +107,36 @@ Make sure these icon files exist in the `icons/` folder:
 ### Panel Controls
 
 - **Show/Hide Panel**: Toggle via extension popup (stays hidden by default)
-- **Drag to Move**: Click and drag the panel header to reposition it
+- **Drag to Move**: Click and drag any panel header to reposition it
+- **Settings Button**: Access random delay and other settings via ⚙️ button
+- **Inspector Tool**: Use 🔍 button to inspect coordinates and element details
+- **Collapse Panel**: Minimize the main panel to save screen space
 - **Status Indicator**: See real-time status (Ready, Recording, Playing)
+
+### Advanced Features
+
+#### Settings Panel (v1.1.0+)
+Access via the ⚙️ button in the main panel:
+- **Random Delay**: Enable natural-looking delays between clicks
+- **Min/Max Range**: Configure random delay range (milliseconds)
+- **Help Text**: Built-in explanations for each setting
+
+#### Loop Controls
+- **Loop Count**: Run macros multiple times automatically
+- **Loop Delay**: Add delays between loop iterations
+- **Progress Tracking**: See current loop and click number during playback
+
+#### Macro Editor
+- **Edit Names**: Rename your macros
+- **Adjust Timing**: Change delays between individual clicks
+- **Edit Coordinates**: Fine-tune X/Y positions
+- **Combine Macros**: Chain multiple macros into sequences
+
+#### Position Inspector
+- **Real-time Tracking**: See coordinates as you move your mouse
+- **Element Info**: View tag names, IDs, classes, and text content
+- **Save Snapshots**: Click to save positions for reference
+- **Snapshot History**: Review all saved positions with timestamps
 
 ## Features in Detail
 
@@ -140,10 +181,19 @@ During playback, you'll see:
 ```
 fox-macro-recorder/
 ├── manifest.json          # Extension configuration
-├── content.js             # Main recorder logic & floating panel
+├── content-main.js        # Main entry point
+├── utils.js               # Utility functions
+├── recording.js           # Recording logic
+├── playback.js            # Playback logic
+├── macros.js              # Macro operations
+├── panels/
+│   ├── main-panel.js     # Main recorder panel
+│   ├── edit-panel.js     # Macro editor
+│   ├── inspector-panel.js # Position inspector
+│   └── settings-panel.js  # Settings configuration
 ├── popup/
 │   ├── popup.html        # Extension popup UI
-│   ├── popup.js          # Popup logic
+│   └── popup.js          # Popup logic
 └── icons/
     ├── icon16.png        # Extension icons
     ├── icon48.png
@@ -152,7 +202,11 @@ fox-macro-recorder/
 
 ## Version
 
-**Current Version**: 1.0.0
+**Current Version**: 1.1.0
+
+### Version History
+- **v1.1.0** (2026-01-28): Settings panel, UI improvements, code refactoring
+- **v1.0.0** (2026-01): Initial release
 
 ## Chrome Web Store Submission
 
