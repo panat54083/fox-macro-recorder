@@ -7,6 +7,23 @@
 
 **Note:** This is a vibe coding project - built for fun, experimentation, and learning! While it's fully functional, it was created with a focus on exploring ideas and enjoying the development process. 🎨✨
 
+---
+
+## 📋 Table of Contents
+- [What's New](#-whats-new-in-v110)
+- [Single Purpose](#single-purpose)
+- [What is Fox Macro Recorder?](#what-is-fox-macro-recorder)
+- [Complete Features List](#complete-features-list) ⭐ **60+ Features**
+- [Why Install?](#why-should-you-install-fox-macro-recorder)
+- [Installation](#installation)
+- [How to Use](#how-to-use)
+- [Tips & Tricks](#tips--tricks)
+- [Technical Details](#technical-details)
+- [Privacy & Chrome Web Store](#chrome-web-store-submission)
+- [Support](#support)
+
+---
+
 ## 🆕 What's New in v1.1.0
 
 - **⚙️ Dedicated Settings Panel**: New floating settings panel for better organization
@@ -27,16 +44,37 @@ Fox Macro Recorder is a Chrome extension that helps you automate repetitive clic
 
 ### What Can It Do?
 
-- **📹 Record Click Actions**: Capture every mouse click you make on a webpage, including exact positions and timing
-- **▶️ Replay Macros**: Play back your recorded clicks with the same timing and precision
-- **💾 Save & Manage**: Store multiple macros locally and organize them by name
-- **📤 Export/Import**: Share macros with others or backup your automation workflows as JSON files
-- **🎯 Visual Feedback**: See exactly where clicks are happening with animated effects during playback
-- **⚙️ Settings Panel**: Configure random delays and other options in a dedicated settings interface
-- **🔍 Position Inspector**: Built-in tool to inspect coordinates and element details
-- **✏️ Macro Editor**: Edit click timings, positions, and combine multiple macros
-- **🔄 Loop Controls**: Repeat macros multiple times with custom delays between iterations
-- **⏹️ Full Control**: Start, stop, and manage recordings with an easy-to-use interface
+In short: **Record → Save → Replay → Automate!**
+
+- **📹 Record** - Capture click sequences with coordinates, timing, and element info
+- **▶️ Replay** - Play back clicks with original timing or custom loops
+- **💾 Manage** - Save, edit, delete, export, and import macros
+- **🎯 Visualize** - See ripple effects, highlights, and progress during playback
+- **⚙️ Configure** - Random delays, loop counts, timing adjustments
+- **🔍 Inspect** - Real-time coordinate tracking and element inspection
+- **✏️ Edit** - Fine-tune positions, delays, and combine multiple macros
+- **🔒 Privacy** - 100% local storage, no servers, no tracking
+
+**See the [Complete Features List](#complete-features-list) below for 60+ detailed features organized by category.**
+
+<details open>
+<summary><b>📊 Features Overview (Click to expand/collapse)</b></summary>
+
+| Category | Features |
+|----------|----------|
+| 📹 **Recording** | Click capture, coordinate tracking, timing preservation, element detection, visual feedback |
+| ▶️ **Playback** | Accurate replay, visual effects, progress tracking, stop/resume, element highlighting |
+| 🔄 **Automation** | Multi-loop playback, loop delays, random delays, pause controls |
+| 💾 **Management** | Save/load/delete, export/import JSON, local storage, metadata tracking |
+| ✏️ **Editing** | Position adjustment, timing editor, macro combining, bulk operations |
+| 🔍 **Inspector** | Real-time tracking, element info, snapshot capture, history |
+| ⚙️ **Settings** | Random delays, min/max range, persistent config |
+| 🎨 **Interface** | Draggable panels, resizable, collapsible, mini-bar, status indicators |
+| 🛡️ **Privacy** | 100% local, no tracking, no servers, open source |
+| 🔧 **Technical** | Manifest V3, pure JS, modular, cross-browser, JSON format |
+
+**Total: 60+ Features** | See detailed list below ↓
+</details>
 
 ### Why Should You Install Fox Macro Recorder?
 
@@ -138,25 +176,119 @@ Access via the ⚙️ button in the main panel:
 - **Save Snapshots**: Click to save positions for reference
 - **Snapshot History**: Review all saved positions with timestamps
 
-## Features in Detail
+## Complete Features List
 
-### Coordinate-Based Clicking
-Fox Macro Recorder uses exact screen coordinates for maximum accuracy. This means clicks land precisely where you recorded them, even if element IDs or classes change.
+### 📹 Recording Features
+- **Click Recording** - Captures every mouse click with pixel-perfect accuracy
+- **Coordinate Tracking** - Records exact X/Y coordinates for precise replay
+- **Element Detection** - Captures element information (tag, text, selector) for context
+- **Timing Preservation** - Records exact delays between each click
+- **Visual Feedback** - Real-time ripple effects during recording to confirm captured clicks
+- **Smart Filtering** - Automatically ignores clicks on the extension panel itself
 
-### Original Timing Preservation
-The extension records the exact time between each click and replays them with the same delays, maintaining your natural workflow rhythm.
+### ▶️ Playback Features
+- **Accurate Replay** - Plays back clicks with original timing and coordinates
+- **Visual Effects** - Animated ripple effects, glowing dots, and element highlights during playback
+- **Progress Tracking** - Real-time status showing current click number and loop iteration
+- **Stop/Resume Control** - Interrupt playback at any time with the stop button
+- **Auto-Focus** - Automatically clicks on detected elements at recorded coordinates
+- **Element Highlighting** - Visual outline shows which element is being clicked
 
-### Visual Playback Effects
-During playback, you'll see:
-- 🔵 Ripple effects at click locations
-- ⚡ Glowing dots marking exact positions
-- 🏷️ "CLICK" labels for clear visibility
-- 🎨 Element highlights showing what's being clicked
+### 🔄 Loop & Automation
+- **Multi-Loop Playback** - Repeat macros 1-999+ times automatically
+- **Loop Delays** - Configure delays between loop iterations (milliseconds)
+- **Random Delays** - Add natural variation with configurable min/max random delays
+- **Progress Display** - Shows current loop count and click progress (e.g., "3/10 · 5/12")
+- **Pause Between Loops** - Optional delays between iterations for rate limiting
 
-### Privacy & Storage
-- All macros are stored locally in your browser
-- No data is sent to external servers
-- Export/import works with simple JSON files
+### 💾 Macro Management
+- **Save Macros** - Store unlimited macros with custom names
+- **Load Macros** - Quick access to all saved macros from dropdown
+- **Delete Macros** - Remove unwanted macros permanently
+- **Export to JSON** - Save individual macros as JSON files for sharing or backup
+- **Import from JSON** - Load macros from JSON files via extension popup
+- **Local Storage** - All macros stored securely in browser (no cloud/server)
+- **Macro Metadata** - Tracks creation date, click count, and macro details
+
+### ✏️ Advanced Editing
+- **Macro Name Editor** - Rename macros for better organization
+- **Position Adjustment** - Fine-tune X/Y coordinates for each click
+- **Timing Editor** - Modify delays between individual clicks
+- **Combine Macros** - Chain multiple macros into sequences with custom delays
+- **Action Inspector** - View all click details in a scrollable list
+- **Bulk Operations** - Edit multiple aspects of a macro in one session
+
+### 🔍 Position Inspector Tool
+- **Real-Time Tracking** - Live X/Y coordinates as you move your mouse
+- **Element Information** - Displays tag name, ID, classes, and text content
+- **Snapshot Capture** - Click to save specific positions for reference
+- **Snapshot History** - Review all saved positions with timestamps
+- **Element Preview** - Shows element details under cursor
+- **Toggle On/Off** - Activate/deactivate with inspector button
+
+### ⚙️ Settings & Configuration
+- **Random Delay Toggle** - Enable/disable random delays for natural playback
+- **Min/Max Delay Range** - Configure random delay bounds (0-10000ms)
+- **Settings Panel** - Dedicated floating panel for all configurations
+- **Persistent Settings** - Settings saved across browser sessions
+- **Instant Apply** - Changes take effect immediately without reload
+
+### 🎨 User Interface
+- **Floating Control Panel** - Non-intrusive overlay that stays on top
+- **Draggable Panels** - Move any panel by dragging the header
+- **Resizable Main Panel** - 8-direction resize handles (N, S, E, W, NE, NW, SE, SW)
+- **Collapsible Design** - Minimize to compact mini-bar to save screen space
+- **Mini Control Bar** - Quick access to record/play/stop when collapsed
+- **Status Indicators** - Color-coded status dots (gray=ready, red=recording, blue=playing)
+- **Multiple Panels** - Main panel, edit panel, inspector panel, settings panel
+- **Hide by Default** - Panel stays hidden until activated via extension popup
+- **Gradient Headers** - Beautiful purple gradient design
+- **Responsive Layout** - Adapts to different screen sizes
+
+### 🎯 Smart Controls
+- **Quick Select Dropdown** - Choose macros from mini-bar dropdown (when collapsed)
+- **One-Click Play** - Play selected macro directly from mini-bar
+- **Stop During Playback** - Interrupt running macros instantly
+- **Keyboard Shortcuts** - Enter key submits in save dialog
+- **Button State Management** - Buttons disable/enable based on current state
+- **Auto-Expand** - Panel expands automatically when saving a recording
+
+### 🛡️ Privacy & Security
+- **100% Local Storage** - No cloud servers or external connections
+- **No Data Collection** - Zero tracking, analytics, or telemetry
+- **No External Scripts** - All code self-contained in extension
+- **Browser-Only Storage** - Uses chrome.storage.local API
+- **No Permissions Abuse** - Only requires 'storage' permission
+- **Open Source** - All code visible and reviewable
+- **No Login Required** - Works completely offline after installation
+
+### 🔧 Technical Features
+- **Manifest V3** - Latest Chrome extension standard
+- **Pure JavaScript** - No external dependencies or frameworks
+- **Modular Architecture** - Organized into separate modules (recording, playback, panels, macros)
+- **Event-Driven** - Efficient event handling for clicks and UI interactions
+- **Cross-Browser Compatible** - Works on Chrome and Firefox
+- **JSON Format** - Simple, readable export/import format
+- **Coordinate-Based** - Uses screen coordinates (not DOM selectors) for accuracy
+- **Element Detection** - Falls back to elementFromPoint for reliability
+
+### 📊 Visual Feedback
+- **Recording Indicator** - Pulsing red dot shows active recording
+- **Playback Indicator** - Pulsing blue dot shows active playback
+- **Click Ripples** - Animated circles at each click location
+- **Glowing Dots** - Persistent markers at click coordinates
+- **"CLICK" Labels** - Text labels for maximum visibility
+- **Element Outlines** - Blue border highlights clicked elements
+- **Status Text Updates** - Real-time text status in panel
+- **Progress Counters** - Shows X/Y click and loop/total loop
+
+### 📤 Export/Import System
+- **JSON Export** - Export macros as .json files
+- **JSON Import** - Import macros from .json files via popup
+- **Readable Format** - JSON files are human-readable and editable
+- **Portable** - Share macros with teammates or across devices
+- **Backup Support** - Export all macros for safe keeping
+- **Version Compatible** - Works across extension updates
 
 ## Tips & Tricks
 
@@ -270,6 +402,12 @@ This project is open source and available for personal and commercial use.
 ## Support
 
 For issues, suggestions, or contributions, please create an issue in the repository.
+
+### ☕ Support This Project
+
+If you find Fox Macro Recorder helpful, consider buying me a coffee! Your support helps keep this project maintained and improved.
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/panat.siriwong)
 
 ---
 
