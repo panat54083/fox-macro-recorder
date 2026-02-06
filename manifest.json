@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Fox Macro Recorder",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Cleverly record and replay your clicks like a sly fox - automate repetitive tasks with precision!",
   "permissions": [
     "storage"
@@ -18,7 +18,10 @@
     {
       "matches": ["<all_urls>"],
       "js": [
+        "fox-styles.js",
         "utils.js",
+        "components/toast.js",
+        "components/fab.js",
         "recording.js",
         "playback.js",
         "macros.js",

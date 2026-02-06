@@ -1,15 +1,20 @@
-// Macro operations (CRUD)
+// Fox Macro Recorder - Macro Operations (CRUD)
+
+let deleteConfirmMacroId = null;
+let deleteConfirmTimer = null;
 
 async function loadMacros() {
-  const list = document.getElementById('mr-macros-list');
+  const list = foxShadowRoot?.querySelector('#fox-macros-list');
+  if (!list) return;
+
   const result = await chrome.storage.local.get(['macros']);
   const macros = result.macros || [];
 
-  // Update mini play button state
-  updateMiniPlayButton();
+  // Update macro select dropdown
+  updateMacroSelect(macros);
 
   if (macros.length === 0) {
-    list.innerHTML = '<div class="mr-empty">No macros saved</div>';
+    list.innerHTML = '<div class="fox-empty">No macros saved</div>';
     return;
   }
 
@@ -17,68 +22,150 @@ async function loadMacros() {
     const totalTime = m.actions.length > 0 ? m.actions[m.actions.length - 1].timestamp : 0;
     const loopCount = m.loopCount || 1;
     const loopDelay = m.loopDelay || 0;
-    const duration = formatDuration(totalTime);
+    const info = formatMacroInfo(m.actions.length, totalTime);
+    const isConfirming = deleteConfirmMacroId === m.id;
 
     return `
-    <div class="mr-macro-item" data-id="${m.id}">
-      <div class="mr-macro-row">
-        <span class="mr-macro-name">${m.name}</span>
-        <span class="mr-macro-info">${m.actions.length} · ${duration}</span>
-      </div>
-      <div class="mr-macro-row2">
-        <div class="mr-macro-actions">
-          <button class="mr-action-btn mr-btn-play" data-action="play" title="Play">▶</button>
-          <button class="mr-action-btn mr-btn-edit" data-action="edit" title="Edit">✎</button>
-          <button class="mr-action-btn mr-btn-export" data-action="export" title="Export">↗</button>
-          <button class="mr-action-btn mr-btn-delete" data-action="delete" title="Delete">×</button>
+    <div class="fox-macro-card${isConfirming ? ' confirm-delete' : ''}" data-id="${m.id}">
+      ${isConfirming ? `
+        <div class="fox-macro-row">
+          <span class="fox-macro-name">Delete "${m.name}"?</span>
         </div>
-        <div class="mr-loop-controls">
-          <div class="mr-loop-item" title="Loop count">
-            <span>🔁</span>
-            <input type="number" class="mr-loop-count-input" value="${loopCount}" min="1" max="999" data-id="${m.id}">
+        <div class="fox-delete-confirm">
+          <button class="fox-btn-cancel-delete" data-action="cancel-delete">Cancel</button>
+          <button class="fox-btn-confirm-delete" data-action="confirm-delete">Confirm Delete</button>
+        </div>
+      ` : `
+        <div class="fox-macro-row">
+          <span class="fox-macro-name">${m.name}</span>
+          <span class="fox-macro-info">${info}</span>
+        </div>
+        <div class="fox-macro-row2">
+          <div class="fox-macro-actions">
+            <button class="fox-action-btn fox-abtn-play" data-action="play" title="Play">\u25B6</button>
+            <button class="fox-action-btn fox-abtn-edit" data-action="edit" title="Edit">\u270E</button>
+            <button class="fox-action-btn fox-abtn-export" data-action="export" title="Export">\u2B06</button>
+            <button class="fox-action-btn fox-abtn-delete" data-action="delete" title="Delete">\uD83D\uDDD1</button>
           </div>
-          <div class="mr-loop-item" title="Delay between loops (ms)">
-            <span>⏱</span>
-            <input type="number" class="mr-loop-delay-input" value="${loopDelay}" min="0" data-id="${m.id}">
+          <div class="fox-loop-controls">
+            <div class="fox-loop-item" title="Loop count">
+              <span>\uD83D\uDD01</span>
+              <input type="number" class="fox-loop-input fox-loop-count" value="${loopCount}" min="1" max="999" data-id="${m.id}">
+            </div>
+            <div class="fox-loop-item" title="Delay between loops (ms)">
+              <span>\u23F1</span>
+              <input type="number" class="fox-loop-input fox-loop-delay" value="${loopDelay}" min="0" data-id="${m.id}">
+            </div>
           </div>
         </div>
-      </div>
+      `}
     </div>
     `;
   }).join('');
 
-  list.querySelectorAll('.mr-macro-item').forEach(item => {
-    const id = item.dataset.id;
-    const playBtn = item.querySelector('[data-action="play"]');
+  // Bind events
+  list.querySelectorAll('.fox-macro-card').forEach(card => {
+    const id = card.dataset.id;
 
-    playBtn.addEventListener('click', async () => {
-      if (isPlaying) {
-        // Stop playback
-        shouldStopPlayback = true;
-      } else {
-        // Start playback - button will be updated by playMacro
-        await playMacro(id, playBtn);
-      }
+    // Play
+    const playBtn = card.querySelector('[data-action="play"]');
+    if (playBtn) {
+      playBtn.addEventListener('click', async () => {
+        if (isPlaying) {
+          shouldStopPlayback = true;
+        } else {
+          await playMacro(id, playBtn);
+        }
+      });
+    }
+
+    // Edit
+    card.querySelector('[data-action="edit"]')?.addEventListener('click', () => {
+      showEditTab(id);
     });
 
-    item.querySelector('[data-action="edit"]').addEventListener('click', () => openEditPanel(id));
-    item.querySelector('[data-action="export"]').addEventListener('click', () => exportMacro(id));
-    item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteMacro(id));
+    // Export
+    card.querySelector('[data-action="export"]')?.addEventListener('click', () => {
+      exportMacro(id);
+    });
+
+    // Delete (first click)
+    card.querySelector('[data-action="delete"]')?.addEventListener('click', () => {
+      showDeleteConfirm(id);
+    });
+
+    // Cancel delete
+    card.querySelector('[data-action="cancel-delete"]')?.addEventListener('click', () => {
+      cancelDeleteConfirm();
+    });
+
+    // Confirm delete
+    card.querySelector('[data-action="confirm-delete"]')?.addEventListener('click', () => {
+      confirmDelete(id);
+    });
 
     // Loop controls
-    const loopCountInput = item.querySelector('.mr-loop-count-input');
-    const loopDelayInput = item.querySelector('.mr-loop-delay-input');
+    const loopCountInput = card.querySelector('.fox-loop-count');
+    const loopDelayInput = card.querySelector('.fox-loop-delay');
 
-    loopCountInput.addEventListener('change', async () => {
-      const newLoopCount = parseInt(loopCountInput.value) || 1;
-      await updateMacroLoopSettings(id, newLoopCount, null);
+    loopCountInput?.addEventListener('change', async () => {
+      await updateMacroLoopSettings(id, parseInt(loopCountInput.value) || 1, null);
     });
 
-    loopDelayInput.addEventListener('change', async () => {
-      const newLoopDelay = parseInt(loopDelayInput.value) || 0;
-      await updateMacroLoopSettings(id, null, newLoopDelay);
+    loopDelayInput?.addEventListener('change', async () => {
+      await updateMacroLoopSettings(id, null, parseInt(loopDelayInput.value) || 0);
     });
   });
+}
+
+function updateMacroSelect(macros) {
+  const select = foxShadowRoot?.querySelector('#fox-macro-select');
+  if (!select) return;
+
+  if (macros.length > 0) {
+    select.innerHTML = macros.map(m =>
+      `<option value="${m.id}">${m.name}</option>`
+    ).join('');
+    select.disabled = false;
+  } else {
+    select.innerHTML = '<option value="">No macros</option>';
+    select.disabled = true;
+  }
+
+  const playBtn = foxShadowRoot?.querySelector('#fox-play-btn');
+  if (playBtn) playBtn.disabled = macros.length === 0;
+}
+
+function showDeleteConfirm(macroId) {
+  if (deleteConfirmTimer) clearTimeout(deleteConfirmTimer);
+  deleteConfirmMacroId = macroId;
+  loadMacros();
+
+  // Auto-cancel after 5 seconds
+  deleteConfirmTimer = setTimeout(() => {
+    if (deleteConfirmMacroId === macroId) {
+      cancelDeleteConfirm();
+    }
+  }, 5000);
+}
+
+function cancelDeleteConfirm() {
+  if (deleteConfirmTimer) clearTimeout(deleteConfirmTimer);
+  deleteConfirmMacroId = null;
+  deleteConfirmTimer = null;
+  loadMacros();
+}
+
+async function confirmDelete(id) {
+  if (deleteConfirmTimer) clearTimeout(deleteConfirmTimer);
+  deleteConfirmMacroId = null;
+  deleteConfirmTimer = null;
+
+  const result = await chrome.storage.local.get(['macros']);
+  const macros = result.macros.filter(m => m.id !== id);
+  await chrome.storage.local.set({ macros });
+  loadMacros();
+  showToast('\u2713 Macro deleted', 'success');
 }
 
 async function updateMacroLoopSettings(id, loopCount, loopDelay) {
@@ -87,12 +174,8 @@ async function updateMacroLoopSettings(id, loopCount, loopDelay) {
   const macroIndex = macros.findIndex(m => m.id === id);
 
   if (macroIndex !== -1) {
-    if (loopCount !== null) {
-      macros[macroIndex].loopCount = loopCount;
-    }
-    if (loopDelay !== null) {
-      macros[macroIndex].loopDelay = loopDelay;
-    }
+    if (loopCount !== null) macros[macroIndex].loopCount = loopCount;
+    if (loopDelay !== null) macros[macroIndex].loopDelay = loopDelay;
     await chrome.storage.local.set({ macros });
   }
 }
@@ -109,6 +192,7 @@ async function exportMacro(id) {
   a.download = `${macro.name.replace(/[^a-z0-9]/gi, '_')}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  showToast('\u2713 Macro exported', 'success');
 }
 
 async function deleteMacro(id) {
@@ -116,4 +200,27 @@ async function deleteMacro(id) {
   const macros = result.macros.filter(m => m.id !== id);
   await chrome.storage.local.set({ macros });
   loadMacros();
+}
+
+async function saveMacro() {
+  const saveInput = foxShadowRoot?.querySelector('#fox-save-input');
+  const saveBar = foxShadowRoot?.querySelector('.fox-save-bar');
+
+  const name = saveInput?.value.trim() || `Macro ${Date.now()}`;
+  const macro = {
+    id: Date.now().toString(),
+    name: name,
+    createdAt: new Date().toISOString(),
+    actions: recordedActions
+  };
+
+  const result = await chrome.storage.local.get(['macros']);
+  const macros = result.macros || [];
+  macros.push(macro);
+  await chrome.storage.local.set({ macros });
+
+  if (saveBar) saveBar.classList.remove('visible');
+  recordedActions = [];
+  loadMacros();
+  showToast('\u2713 Macro saved', 'success');
 }
