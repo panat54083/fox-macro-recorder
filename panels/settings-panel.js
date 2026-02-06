@@ -30,7 +30,7 @@ function renderSettingsTab() {
         <div class="fox-about">
           <div class="fox-version">Fox Macro Recorder v2.0.0</div>
           <div class="fox-about-links">
-            <span class="fox-about-link" id="fox-about-help">Help</span>
+            <a class="fox-about-link" href="https://buymeacoffee.com/panat.siriwong" target="_blank">Buy Me a Coffee</a>
           </div>
         </div>
       </div>
