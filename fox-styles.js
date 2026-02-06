@@ -492,13 +492,6 @@ function getFoxStyles() {
 
     .fox-abtn-edit:hover { background: #E0E7FF; }
 
-    .fox-abtn-export {
-      background: var(--fox-orange-light);
-      color: var(--fox-orange);
-    }
-
-    .fox-abtn-export:hover { background: #FDE68A; }
-
     .fox-abtn-delete {
       background: var(--fox-red-light);
       color: var(--fox-red);
@@ -777,62 +770,6 @@ function getFoxStyles() {
       outline: none;
       border-color: var(--fox-primary);
     }
-
-    .fox-combine-section {
-      margin-top: 4px;
-    }
-
-    .fox-combine-select {
-      width: 100%;
-      padding: 7px 10px;
-      border: 2px solid var(--fox-gray-200);
-      border-radius: var(--fox-radius-sm);
-      font-size: 12px;
-      font-family: var(--fox-font);
-      background: var(--fox-white);
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .fox-combine-select:focus {
-      outline: none;
-      border-color: var(--fox-primary);
-    }
-
-    .fox-combined-item {
-      background: var(--fox-blue-light);
-      border: 1px solid #93C5FD;
-      border-radius: var(--fox-radius-sm);
-      padding: 6px 10px;
-      margin-top: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .fox-combined-name {
-      font-size: 12px;
-      color: var(--fox-blue);
-      font-weight: 500;
-    }
-
-    .fox-combined-controls {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .fox-btn-remove {
-      background: none;
-      border: none;
-      color: var(--fox-red);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 2px;
-      line-height: 1;
-    }
-
-    .fox-btn-remove:hover { transform: scale(1.1); }
 
     /* ==========================================
        Inspector Tab

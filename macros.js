@@ -44,7 +44,6 @@ async function loadMacros() {
           <div class="fox-macro-actions">
             <button class="fox-action-btn fox-abtn-play" data-action="play" title="Play">\u25B6</button>
             <button class="fox-action-btn fox-abtn-edit" data-action="edit" title="Edit">\u270E</button>
-            <button class="fox-action-btn fox-abtn-export" data-action="export" title="Export">\u2B06</button>
             <button class="fox-action-btn fox-abtn-delete" data-action="delete" title="Delete">\uD83D\uDDD1</button>
           </div>
           <div class="fox-loop-controls">
@@ -82,11 +81,6 @@ async function loadMacros() {
     // Edit
     card.querySelector('[data-action="edit"]')?.addEventListener('click', () => {
       showEditTab(id);
-    });
-
-    // Export
-    card.querySelector('[data-action="export"]')?.addEventListener('click', () => {
-      exportMacro(id);
     });
 
     // Delete (first click)
@@ -178,21 +172,6 @@ async function updateMacroLoopSettings(id, loopCount, loopDelay) {
     if (loopDelay !== null) macros[macroIndex].loopDelay = loopDelay;
     await chrome.storage.local.set({ macros });
   }
-}
-
-async function exportMacro(id) {
-  const result = await chrome.storage.local.get(['macros']);
-  const macro = result.macros.find(m => m.id === id);
-  if (!macro) return;
-
-  const blob = new Blob([JSON.stringify(macro, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${macro.name.replace(/[^a-z0-9]/gi, '_')}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('\u2713 Macro exported', 'success');
 }
 
 async function deleteMacro(id) {

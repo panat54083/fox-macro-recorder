@@ -68,9 +68,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   } else if (message.action === 'getPanelState') {
     sendResponse({ isHidden: foxPanel ? foxPanel.classList.contains('hidden') : false });
-  } else if (message.action === 'reloadMacros') {
-    loadMacros();
-    sendResponse({ success: true });
   }
   return true;
 });
