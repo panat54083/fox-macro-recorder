@@ -75,6 +75,25 @@ function getFoxStyles() {
       display: none;
     }
 
+    /* Minimal mode: control bar only */
+    #fox-panel.minimal-mode {
+      width: auto;
+      min-width: 0;
+    }
+
+    #fox-panel.minimal-mode .fox-tabs,
+    #fox-panel.minimal-mode .fox-save-bar,
+    #fox-panel.minimal-mode .fox-domain-filter-bar,
+    #fox-panel.minimal-mode .fox-macros,
+    #fox-panel.minimal-mode .fox-status-strip,
+    #fox-panel.minimal-mode .fox-tab-content[data-tab="settings"] {
+      display: none !important;
+    }
+
+    #fox-panel.minimal-mode .fox-control-bar {
+      border-bottom: none;
+    }
+
     /* Recording mode: minimal panel with only status + stop */
     #fox-panel.recording-mode {
       width: auto;

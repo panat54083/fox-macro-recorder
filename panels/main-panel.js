@@ -17,6 +17,7 @@ function createPanel() {
         <button class="fox-tab-btn" data-tab="settings" title="Settings">\u2699\uFE0F</button>
       </div>
       <div class="fox-header-actions">
+        <button class="fox-icon-btn" id="fox-minimal-btn" title="Minimal mode">\u25A0</button>
         <button class="fox-icon-btn" id="fox-minimize-btn" title="Minimize">\u2212</button>
         <button class="fox-icon-btn" id="fox-close-btn" title="Close">\u00D7</button>
       </div>
@@ -130,6 +131,14 @@ function bindPanelEvents() {
   // Domain filter
   const domainFilter = foxShadowRoot.querySelector('#fox-domain-filter');
   domainFilter.addEventListener('change', () => loadMacros());
+
+  // Minimal mode toggle
+  const minimalBtn = foxShadowRoot.querySelector('#fox-minimal-btn');
+  minimalBtn.addEventListener('click', () => {
+    foxPanel.classList.toggle('minimal-mode');
+    minimalBtn.textContent = foxPanel.classList.contains('minimal-mode') ? '\u25A1' : '\u25A0';
+    minimalBtn.title = foxPanel.classList.contains('minimal-mode') ? 'Full mode' : 'Minimal mode';
+  });
 
   // Minimize
   minimizeBtn.addEventListener('click', minimizePanel);
