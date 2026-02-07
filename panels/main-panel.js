@@ -54,16 +54,6 @@ function createPanel() {
     <div class="fox-tab-content" data-tab="settings">
       <div id="fox-settings-content"></div>
     </div>
-
-    <!-- Resize Handles -->
-    <div class="fox-resize fox-resize-e" data-resize="e"></div>
-    <div class="fox-resize fox-resize-s" data-resize="s"></div>
-    <div class="fox-resize fox-resize-w" data-resize="w"></div>
-    <div class="fox-resize fox-resize-n" data-resize="n"></div>
-    <div class="fox-resize fox-resize-se" data-resize="se"></div>
-    <div class="fox-resize fox-resize-sw" data-resize="sw"></div>
-    <div class="fox-resize fox-resize-ne" data-resize="ne"></div>
-    <div class="fox-resize fox-resize-nw" data-resize="nw"></div>
   `;
 
   // Hide by default
@@ -77,9 +67,6 @@ function createPanel() {
 
   // Bind events
   bindPanelEvents();
-
-  // Setup resize
-  setupResizeHandles();
 
   // Load settings
   loadRandomDelaySetting();
@@ -150,66 +137,6 @@ function bindPanelEvents() {
   // Close
   closeBtn.addEventListener('click', () => {
     foxPanel.classList.add('hidden');
-  });
-}
-
-function setupResizeHandles() {
-  foxShadowRoot.querySelectorAll('.fox-resize').forEach(handle => {
-    handle.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const direction = handle.dataset.resize;
-      const startX = e.clientX;
-      const startY = e.clientY;
-      const startWidth = foxPanel.offsetWidth;
-      const startHeight = foxPanel.offsetHeight;
-      const rect = foxPanel.getBoundingClientRect();
-
-      foxPanel.classList.add('resizing');
-
-      function onMouseMove(e) {
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        if (direction.includes('e')) {
-          newWidth = Math.max(280, Math.min(startWidth + deltaX, window.innerWidth - rect.left - 10));
-        }
-        if (direction.includes('w')) {
-          const possibleWidth = startWidth - deltaX;
-          if (possibleWidth >= 280 && possibleWidth <= window.innerWidth * 0.9) {
-            newWidth = possibleWidth;
-            foxPanel.style.left = (rect.left + deltaX) + 'px';
-            foxPanel.style.right = 'auto';
-          }
-        }
-        if (direction.includes('s')) {
-          newHeight = Math.max(200, Math.min(startHeight + deltaY, window.innerHeight - rect.top - 10));
-        }
-        if (direction.includes('n')) {
-          const possibleHeight = startHeight - deltaY;
-          if (possibleHeight >= 200 && possibleHeight <= window.innerHeight * 0.9) {
-            newHeight = possibleHeight;
-            foxPanel.style.top = (rect.top + deltaY) + 'px';
-          }
-        }
-
-        foxPanel.style.width = newWidth + 'px';
-        foxPanel.style.height = newHeight + 'px';
-      }
-
-      function onMouseUp() {
-        foxPanel.classList.remove('resizing');
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
   });
 }
 

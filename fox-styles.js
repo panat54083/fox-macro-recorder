@@ -75,11 +75,6 @@ function getFoxStyles() {
       display: none;
     }
 
-    #fox-panel.resizing {
-      transition: none;
-      user-select: none;
-    }
-
     /* Recording mode: minimal panel with only status + stop */
     #fox-panel.recording-mode {
       width: auto;
@@ -96,8 +91,7 @@ function getFoxStyles() {
     #fox-panel.recording-mode .fox-save-bar,
     #fox-panel.recording-mode .fox-domain-filter-bar,
     #fox-panel.recording-mode .fox-macros,
-    #fox-panel.recording-mode .fox-tab-content[data-tab="settings"],
-    #fox-panel.recording-mode .fox-resize {
+    #fox-panel.recording-mode .fox-tab-content[data-tab="settings"] {
       display: none !important;
     }
 
@@ -1295,23 +1289,6 @@ function getFoxStyles() {
     .fox-toast.success .fox-toast-icon { color: var(--fox-green); }
     .fox-toast.error .fox-toast-icon { color: var(--fox-red); }
     .fox-toast.info .fox-toast-icon { color: var(--fox-blue); }
-
-    /* ==========================================
-       Resize Handles
-       ========================================== */
-    .fox-resize {
-      position: absolute;
-      z-index: 10;
-    }
-
-    .fox-resize-e { right: -4px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
-    .fox-resize-s { bottom: -4px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
-    .fox-resize-w { left: -4px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
-    .fox-resize-n { top: -4px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
-    .fox-resize-se { right: -4px; bottom: -4px; width: 16px; height: 16px; cursor: nwse-resize; }
-    .fox-resize-sw { left: -4px; bottom: -4px; width: 16px; height: 16px; cursor: nesw-resize; }
-    .fox-resize-ne { right: -4px; top: -4px; width: 16px; height: 16px; cursor: nesw-resize; }
-    .fox-resize-nw { left: -4px; top: -4px; width: 16px; height: 16px; cursor: nwse-resize; }
 
     /* ==========================================
        Tooltips
