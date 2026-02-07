@@ -587,7 +587,56 @@ function getFoxStyles() {
     }
 
     /* ==========================================
-       Edit Tab
+       Edit Panel (Standalone Floating)
+       ========================================== */
+    #fox-edit-panel {
+      position: fixed;
+      top: 60px;
+      right: 400px;
+      width: 340px;
+      max-width: 90vw;
+      max-height: 80vh;
+      background: var(--fox-white);
+      border-radius: var(--fox-radius-lg);
+      box-shadow: var(--fox-shadow-lg);
+      font-family: var(--fox-font);
+      z-index: var(--fox-z-panel);
+      overflow: hidden;
+      font-size: 14px;
+      color: var(--fox-gray-900);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fox-edit-panel-header {
+      background: var(--fox-primary);
+      color: var(--fox-white);
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .fox-edit-panel-title {
+      font-weight: 600;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .fox-edit-panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================
+       Edit Components (shared)
        ========================================== */
     .fox-edit-header {
       display: flex;

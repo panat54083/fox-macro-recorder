@@ -13,7 +13,6 @@ function createPanel() {
       </div>
       <div class="fox-tabs">
         <button class="fox-tab-btn active" data-tab="home" title="Home">\uD83C\uDFE0</button>
-        <button class="fox-tab-btn" data-tab="edit" title="Edit">\uD83D\uDCCB</button>
         <button class="fox-tab-btn" data-tab="inspector" title="Inspector">\uD83D\uDD0D</button>
         <button class="fox-tab-btn" data-tab="settings" title="Settings">\u2699\uFE0F</button>
       </div>
@@ -40,13 +39,6 @@ function createPanel() {
       </div>
       <div class="fox-macros" id="fox-macros-list">
         <div class="fox-empty">No macros saved</div>
-      </div>
-    </div>
-
-    <!-- Edit Tab -->
-    <div class="fox-tab-content" data-tab="edit">
-      <div id="fox-edit-content">
-        <div class="fox-empty" style="padding:32px">Select a macro to edit</div>
       </div>
     </div>
 

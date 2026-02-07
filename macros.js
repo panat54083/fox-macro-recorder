@@ -80,7 +80,7 @@ async function loadMacros() {
 
     // Edit
     card.querySelector('[data-action="edit"]')?.addEventListener('click', () => {
-      showEditTab(id);
+      openEditPanel(id);
     });
 
     // Delete (first click)
