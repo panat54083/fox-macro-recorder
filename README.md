@@ -2,7 +2,7 @@
 
 > Cleverly record and replay your clicks like a sly fox - automate repetitive tasks with precision!
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
 [![Vibe Coding Project](https://img.shields.io/badge/vibe-coding%20project-ff69b4?style=for-the-badge)](https://github.com/panat54083/fox-macro-recorder)
 
 **Note:** This is a vibe coding project - built for fun, experimentation, and learning! While it's fully functional, it was created with a focus on exploring ideas and enjoying the development process. 🎨✨
@@ -10,7 +10,7 @@
 ---
 
 ## 📋 Table of Contents
-- [What's New](#-whats-new-in-v110)
+- [What's New](#-whats-new-in-v200)
 - [Single Purpose](#single-purpose)
 - [What is Fox Macro Recorder?](#what-is-fox-macro-recorder)
 - [Complete Features List](#complete-features-list) ⭐ **60+ Features**
@@ -24,13 +24,14 @@
 
 ---
 
-## 🆕 What's New in v1.1.0
+## 🆕 What's New in v2.0.0
 
-- **⚙️ Dedicated Settings Panel**: New floating settings panel for better organization
-- **🎨 Improved UI/UX**: Cleaner main panel with settings separated for clarity
-- **✨ Enhanced Random Delay Config**: More intuitive min/max settings with help text
-- **🏗️ Code Refactoring**: Modular architecture for better maintainability
-- **📚 Better Documentation**: Added comprehensive release notes and refactoring docs
+- **🌐 Domain-Based Macro Organization**: Macros now store a domain field (auto-detected from current page), grouped by domain in the macro list with a filter dropdown
+- **🔲 Minimal Mode**: Toggle button to show only the control bar (record, stop, select, play) for a compact footprint
+- **↔️ Edit Panel Resize**: Dual corner grips (bottom-left and bottom-right) with correct anchoring for intuitive resizing
+- **🪟 Floating Panel Architecture**: Edit and inspector panels are now standalone draggable floating panels
+- **⏺️ Recording Mode**: Minimal panel during recording showing only status and stop button
+- **🧹 Streamlined UI**: Removed export/import features, cleaned up dead code
 
 ## Single Purpose
 
@@ -48,11 +49,11 @@ In short: **Record → Save → Replay → Automate!**
 
 - **📹 Record** - Capture click sequences with coordinates, timing, and element info
 - **▶️ Replay** - Play back clicks with original timing or custom loops
-- **💾 Manage** - Save, edit, delete, export, and import macros
+- **💾 Manage** - Save, edit, delete macros with domain grouping and filtering
 - **🎯 Visualize** - See ripple effects, highlights, and progress during playback
 - **⚙️ Configure** - Random delays, loop counts, timing adjustments
 - **🔍 Inspect** - Real-time coordinate tracking and element inspection
-- **✏️ Edit** - Fine-tune positions, delays, and combine multiple macros
+- **✏️ Edit** - Fine-tune positions, delays, and domain in a resizable floating panel
 - **🔒 Privacy** - 100% local storage, no servers, no tracking
 
 **See the [Complete Features List](#complete-features-list) below for 60+ detailed features organized by category.**
@@ -65,11 +66,11 @@ In short: **Record → Save → Replay → Automate!**
 | 📹 **Recording** | Click capture, coordinate tracking, timing preservation, element detection, visual feedback |
 | ▶️ **Playback** | Accurate replay, visual effects, progress tracking, stop/resume, element highlighting |
 | 🔄 **Automation** | Multi-loop playback, loop delays, random delays, pause controls |
-| 💾 **Management** | Save/load/delete, export/import JSON, local storage, metadata tracking |
-| ✏️ **Editing** | Position adjustment, timing editor, macro combining, bulk operations |
+| 💾 **Management** | Save/load/delete, domain grouping, domain filtering, local storage, metadata tracking |
+| ✏️ **Editing** | Position adjustment, timing editor, domain editing, resizable floating panel |
 | 🔍 **Inspector** | Real-time tracking, element info, snapshot capture, history |
 | ⚙️ **Settings** | Random delays, min/max range, persistent config |
-| 🎨 **Interface** | Draggable panels, resizable, collapsible, mini-bar, status indicators |
+| 🎨 **Interface** | Draggable panels, minimal mode, collapsible, mini-bar, status indicators |
 | 🛡️ **Privacy** | 100% local, no tracking, no servers, open source |
 | 🔧 **Technical** | Manifest V3, pure JS, modular, cross-browser, JSON format |
 
@@ -126,7 +127,7 @@ Make sure these icon files exist in the `icons/` folder:
 3. Click the **Record** button
 4. Perform your click actions on the webpage
 5. Click **Stop** when finished
-6. Enter a name for your macro and click **Save**
+6. Enter a name for your macro, adjust the domain if needed, and click **Save**
 
 ### Playing Back a Macro
 
@@ -138,14 +139,15 @@ Make sure these icon files exist in the `icons/` folder:
 
 ### Managing Macros
 
-- **Export**: Save a macro as a JSON file to share or backup
-- **Import**: Load a macro from a JSON file (via extension popup)
+- **Domain Filter**: Use the domain dropdown to filter macros by website
+- **Edit**: Click the edit button to adjust name, domain, positions, and timing
 - **Delete**: Remove macros you no longer need
 
 ### Panel Controls
 
 - **Show/Hide Panel**: Toggle via extension popup (stays hidden by default)
 - **Drag to Move**: Click and drag any panel header to reposition it
+- **Minimal Mode**: Click ▪ button to toggle compact control-bar-only mode
 - **Settings Button**: Access random delay and other settings via ⚙️ button
 - **Inspector Tool**: Use 🔍 button to inspect coordinates and element details
 - **Collapse Panel**: Minimize the main panel to save screen space
@@ -166,9 +168,10 @@ Access via the ⚙️ button in the main panel:
 
 #### Macro Editor
 - **Edit Names**: Rename your macros
+- **Edit Domain**: Change the domain a macro is grouped under
 - **Adjust Timing**: Change delays between individual clicks
 - **Edit Coordinates**: Fine-tune X/Y positions
-- **Combine Macros**: Chain multiple macros into sequences
+- **Resizable Panel**: Drag bottom corner grips to resize the edit panel
 
 #### Position Inspector
 - **Real-time Tracking**: See coordinates as you move your mouse
@@ -202,21 +205,21 @@ Access via the ⚙️ button in the main panel:
 - **Pause Between Loops** - Optional delays between iterations for rate limiting
 
 ### 💾 Macro Management
-- **Save Macros** - Store unlimited macros with custom names
-- **Load Macros** - Quick access to all saved macros from dropdown
-- **Delete Macros** - Remove unwanted macros permanently
-- **Export to JSON** - Save individual macros as JSON files for sharing or backup
-- **Import from JSON** - Load macros from JSON files via extension popup
+- **Save Macros** - Store unlimited macros with custom names and domain tags
+- **Domain Grouping** - Macros automatically grouped by website domain
+- **Domain Filter** - Dropdown to show only macros from a selected domain
+- **Load Macros** - Quick access to all saved macros from dropdown (with domain label)
+- **Delete Macros** - Remove unwanted macros with confirmation prompt
 - **Local Storage** - All macros stored securely in browser (no cloud/server)
 - **Macro Metadata** - Tracks creation date, click count, and macro details
 
 ### ✏️ Advanced Editing
 - **Macro Name Editor** - Rename macros for better organization
+- **Domain Editor** - Change the domain a macro is associated with
 - **Position Adjustment** - Fine-tune X/Y coordinates for each click
 - **Timing Editor** - Modify delays between individual clicks
-- **Combine Macros** - Chain multiple macros into sequences with custom delays
 - **Action Inspector** - View all click details in a scrollable list
-- **Bulk Operations** - Edit multiple aspects of a macro in one session
+- **Resizable Edit Panel** - Dual corner grips for intuitive panel resizing
 
 ### 🔍 Position Inspector Tool
 - **Real-Time Tracking** - Live X/Y coordinates as you move your mouse
@@ -236,7 +239,7 @@ Access via the ⚙️ button in the main panel:
 ### 🎨 User Interface
 - **Floating Control Panel** - Non-intrusive overlay that stays on top
 - **Draggable Panels** - Move any panel by dragging the header
-- **Resizable Main Panel** - 8-direction resize handles (N, S, E, W, NE, NW, SE, SW)
+- **Minimal Mode** - Toggle to show only control bar for compact operation
 - **Collapsible Design** - Minimize to compact mini-bar to save screen space
 - **Mini Control Bar** - Quick access to record/play/stop when collapsed
 - **Status Indicators** - Color-coded status dots (gray=ready, red=recording, blue=playing)
@@ -282,13 +285,13 @@ Access via the ⚙️ button in the main panel:
 - **Status Text Updates** - Real-time text status in panel
 - **Progress Counters** - Shows X/Y click and loop/total loop
 
-### 📤 Export/Import System
-- **JSON Export** - Export macros as .json files
-- **JSON Import** - Import macros from .json files via popup
-- **Readable Format** - JSON files are human-readable and editable
-- **Portable** - Share macros with teammates or across devices
-- **Backup Support** - Export all macros for safe keeping
-- **Version Compatible** - Works across extension updates
+### 🌐 Domain Organization
+- **Auto-Detection** - Domain auto-filled from current page when saving
+- **Editable Domain** - Change domain in save bar or edit panel
+- **Grouped List** - Macros visually grouped under domain headers
+- **Filter Dropdown** - Show only macros for a specific domain
+- **Ungrouped Section** - Macros without a domain appear under "Ungrouped"
+- **Backward Compatible** - Existing macros work without a domain field
 
 ## Tips & Tricks
 
@@ -298,7 +301,7 @@ Access via the ⚙️ button in the main panel:
 
 **⏱️ Timing**: If a website is slow, the original timing might not be enough. Re-record during slower conditions for better results.
 
-**📦 Organize**: Use descriptive names for your macros like "Login Flow" or "Form Submission Test" to stay organized.
+**📦 Organize**: Use descriptive names and domains for your macros. The domain is auto-detected, but you can edit it to group macros however you like.
 
 ## Technical Details
 
@@ -334,9 +337,10 @@ fox-macro-recorder/
 
 ## Version
 
-**Current Version**: 1.1.0
+**Current Version**: 2.0.0
 
 ### Version History
+- **v2.0.0** (2026-02-07): Domain-based macro organization, minimal mode, edit panel resize, floating panels, UI streamlining
 - **v1.1.0** (2026-01-28): Settings panel, UI improvements, code refactoring
 - **v1.0.0** (2026-01): Initial release
 
