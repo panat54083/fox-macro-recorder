@@ -80,6 +80,38 @@ function getFoxStyles() {
       user-select: none;
     }
 
+    /* Recording mode: minimal panel with only status + stop */
+    #fox-panel.recording-mode {
+      width: auto;
+      min-width: 0;
+      height: auto;
+      max-height: none;
+    }
+
+    #fox-panel.recording-mode .fox-tabs,
+    #fox-panel.recording-mode .fox-header-actions,
+    #fox-panel.recording-mode .fox-btn-record,
+    #fox-panel.recording-mode .fox-macro-select,
+    #fox-panel.recording-mode .fox-btn-play-main,
+    #fox-panel.recording-mode .fox-save-bar,
+    #fox-panel.recording-mode .fox-macros,
+    #fox-panel.recording-mode .fox-tab-content[data-tab="settings"],
+    #fox-panel.recording-mode .fox-resize {
+      display: none !important;
+    }
+
+    #fox-panel.recording-mode .fox-control-bar {
+      border-bottom: none;
+      justify-content: center;
+      padding: 6px 12px;
+    }
+
+    #fox-panel.recording-mode .fox-ctrl-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
     /* ==========================================
        Header
        ========================================== */

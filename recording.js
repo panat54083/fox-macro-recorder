@@ -53,6 +53,7 @@ function startRecording() {
   if (recordBtn) recordBtn.disabled = true;
   if (stopBtn) stopBtn.disabled = false;
   if (saveBar) saveBar.classList.remove('visible');
+  if (foxPanel) foxPanel.classList.add('recording-mode');
 
   updateFabState();
   showToast('\u23FA Recording started', 'info');
@@ -72,6 +73,7 @@ function stopRecording() {
   }
   if (recordBtn) recordBtn.disabled = false;
   if (stopBtn) stopBtn.disabled = true;
+  if (foxPanel) foxPanel.classList.remove('recording-mode');
 
   updateFabState();
 
