@@ -746,6 +746,47 @@ function getFoxStyles() {
       flex-shrink: 0;
     }
 
+    .fox-resize-grip {
+      position: absolute;
+      bottom: 0;
+      width: 16px;
+      height: 16px;
+      opacity: 0.35;
+      transition: opacity 0.15s;
+    }
+
+    .fox-resize-grip:hover {
+      opacity: 0.7;
+    }
+
+    .fox-resize-grip-br {
+      right: 0;
+      cursor: nwse-resize;
+      background:
+        linear-gradient(135deg,
+          transparent 50%,
+          var(--fox-gray-400) 50%, var(--fox-gray-400) 60%,
+          transparent 60%, transparent 70%,
+          var(--fox-gray-400) 70%, var(--fox-gray-400) 80%,
+          transparent 80%
+        );
+      border-radius: 0 0 var(--fox-radius-lg) 0;
+    }
+
+    .fox-resize-grip-bl {
+      left: 0;
+      cursor: nesw-resize;
+      background:
+        linear-gradient(225deg,
+          transparent 50%,
+          var(--fox-gray-400) 50%, var(--fox-gray-400) 60%,
+          transparent 60%, transparent 70%,
+          var(--fox-gray-400) 70%, var(--fox-gray-400) 80%,
+          transparent 80%
+        );
+      border-radius: 0 0 0 var(--fox-radius-lg);
+    }
+
     /* ==========================================
        Edit Components (shared)
        ========================================== */

@@ -57,12 +57,17 @@ function openEditPanel(id) {
         <div class="fox-section-label">ACTIONS (${macro.actions.length})</div>
         <div class="fox-actions-list">${actionsHTML}</div>
       </div>
+      <div class="fox-resize-grip fox-resize-grip-bl" data-grip="bl"></div>
+      <div class="fox-resize-grip fox-resize-grip-br" data-grip="br"></div>
     `;
 
     foxShadowRoot.appendChild(foxEditPanel);
 
     // Make draggable by header
     makeDraggable(foxEditPanel, foxEditPanel.querySelector('.fox-edit-panel-header'));
+
+    // Resize via corner grip
+    setupEditPanelResize(foxEditPanel);
 
     // Close button
     foxEditPanel.querySelector('#fox-edit-close').addEventListener('click', closeEditPanel);
@@ -111,6 +116,50 @@ function openEditPanel(id) {
       }
 
       closeEditPanel();
+    });
+  });
+}
+
+function setupEditPanelResize(panel) {
+  panel.querySelectorAll('.fox-resize-grip').forEach(grip => {
+    grip.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      grip.setPointerCapture(e.pointerId);
+
+      const side = grip.dataset.grip;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startW = panel.offsetWidth;
+      const startH = panel.offsetHeight;
+      const rect = panel.getBoundingClientRect();
+
+      // Anchor the opposite horizontal side
+      if (side === 'br') {
+        panel.style.left = rect.left + 'px';
+        panel.style.right = 'auto';
+      } else {
+        panel.style.right = (window.innerWidth - rect.right) + 'px';
+        panel.style.left = 'auto';
+      }
+
+      function onMove(e) {
+        const dx = e.clientX - startX;
+        const w = side === 'br'
+          ? Math.max(260, startW + dx)
+          : Math.max(260, startW - dx);
+        const h = Math.max(200, startH + e.clientY - startY);
+        panel.style.width = w + 'px';
+        panel.style.height = h + 'px';
+      }
+
+      function onUp() {
+        grip.removeEventListener('pointermove', onMove);
+        grip.removeEventListener('pointerup', onUp);
+      }
+
+      grip.addEventListener('pointermove', onMove);
+      grip.addEventListener('pointerup', onUp);
     });
   });
 }
