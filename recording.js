@@ -83,6 +83,10 @@ function stopRecording() {
       saveInput.value = '';
       saveInput.focus();
     }
+    const domainInput = foxShadowRoot?.querySelector('#fox-save-domain');
+    if (domainInput) {
+      domainInput.value = window.location.hostname;
+    }
     // Expand panel if minimized
     if (isPanelMinimized) expandPanel();
     // Switch to home tab

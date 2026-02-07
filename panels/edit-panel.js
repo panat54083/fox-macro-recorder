@@ -53,6 +53,7 @@ function openEditPanel(id) {
       </div>
       <div class="fox-edit-body">
         <input type="text" class="fox-edit-name" id="fox-edit-name" value="${macro.name}" placeholder="Macro name">
+        <input type="text" class="fox-edit-domain" id="fox-edit-domain" value="${macro.domain || ''}" placeholder="Domain (e.g. example.com)">
         <div class="fox-section-label">ACTIONS (${macro.actions.length})</div>
         <div class="fox-actions-list">${actionsHTML}</div>
       </div>
@@ -69,6 +70,7 @@ function openEditPanel(id) {
     // Save
     foxEditPanel.querySelector('#fox-edit-save').addEventListener('click', async () => {
       const newName = foxEditPanel.querySelector('#fox-edit-name').value.trim() || macro.name;
+      const newDomain = foxEditPanel.querySelector('#fox-edit-domain').value.trim();
 
       const updatedActions = [...macro.actions];
       const xInputs = foxEditPanel.querySelectorAll('.fox-x-input[data-index]');
@@ -102,7 +104,7 @@ function openEditPanel(id) {
       const macroIndex = macros.findIndex(m => m.id === id);
 
       if (macroIndex !== -1) {
-        macros[macroIndex] = { ...macro, name: newName, actions: updatedActions };
+        macros[macroIndex] = { ...macro, name: newName, domain: newDomain, actions: updatedActions };
         await chrome.storage.local.set({ macros });
         loadMacros();
         showToast('\u2713 Macro updated', 'success');

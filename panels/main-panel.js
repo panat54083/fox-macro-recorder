@@ -35,7 +35,15 @@ function createPanel() {
       <div class="fox-status-strip"></div>
       <div class="fox-save-bar">
         <input type="text" class="fox-save-input" id="fox-save-input" placeholder="Macro name...">
-        <button class="fox-save-btn" id="fox-save-btn" title="Save">\u2713</button>
+        <div class="fox-save-domain-row">
+          <input type="text" class="fox-save-domain" id="fox-save-domain" placeholder="Domain...">
+          <button class="fox-save-btn" id="fox-save-btn" title="Save">\u2713</button>
+        </div>
+      </div>
+      <div class="fox-domain-filter-bar">
+        <select class="fox-domain-filter" id="fox-domain-filter" title="Filter by domain">
+          <option value="__all__">All domains</option>
+        </select>
       </div>
       <div class="fox-macros" id="fox-macros-list">
         <div class="fox-empty">No macros saved</div>
@@ -131,6 +139,10 @@ function bindPanelEvents() {
       }
     }
   });
+
+  // Domain filter
+  const domainFilter = foxShadowRoot.querySelector('#fox-domain-filter');
+  domainFilter.addEventListener('change', () => loadMacros());
 
   // Minimize
   minimizeBtn.addEventListener('click', minimizePanel);

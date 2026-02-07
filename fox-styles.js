@@ -94,6 +94,7 @@ function getFoxStyles() {
     #fox-panel.recording-mode .fox-macro-select,
     #fox-panel.recording-mode .fox-btn-play-main,
     #fox-panel.recording-mode .fox-save-bar,
+    #fox-panel.recording-mode .fox-domain-filter-bar,
     #fox-panel.recording-mode .fox-macros,
     #fox-panel.recording-mode .fox-tab-content[data-tab="settings"],
     #fox-panel.recording-mode .fox-resize {
@@ -363,8 +364,8 @@ function getFoxStyles() {
     /* Save Bar */
     .fox-save-bar {
       display: none;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
       padding: 8px 12px;
       border-bottom: 1px solid var(--fox-gray-200);
       flex-shrink: 0;
@@ -375,7 +376,7 @@ function getFoxStyles() {
     }
 
     .fox-save-input {
-      flex: 1;
+      width: 100%;
       padding: 8px 10px;
       border: 2px solid var(--fox-gray-300);
       border-radius: var(--fox-radius-sm);
@@ -385,6 +386,29 @@ function getFoxStyles() {
     }
 
     .fox-save-input:focus {
+      outline: none;
+      border-color: var(--fox-green);
+      box-shadow: 0 0 0 2px var(--fox-green-light);
+    }
+
+    .fox-save-domain-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fox-save-domain {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid var(--fox-gray-300);
+      border-radius: var(--fox-radius-sm);
+      font-size: 12px;
+      font-family: var(--fox-font);
+      color: var(--fox-gray-700);
+      transition: border-color 0.15s;
+    }
+
+    .fox-save-domain:focus {
       outline: none;
       border-color: var(--fox-green);
       box-shadow: 0 0 0 2px var(--fox-green-light);
@@ -411,6 +435,32 @@ function getFoxStyles() {
       transform: scale(1.05);
     }
 
+    /* Domain Filter */
+    .fox-domain-filter-bar {
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--fox-gray-200);
+      flex-shrink: 0;
+    }
+
+    .fox-domain-filter {
+      width: 100%;
+      height: 30px;
+      padding: 0 8px;
+      border: 1px solid var(--fox-gray-300);
+      border-radius: var(--fox-radius-sm);
+      font-size: 12px;
+      font-family: var(--fox-font);
+      background: var(--fox-white);
+      color: var(--fox-gray-700);
+      cursor: pointer;
+    }
+
+    .fox-domain-filter:focus {
+      outline: none;
+      border-color: var(--fox-primary);
+      box-shadow: 0 0 0 2px var(--fox-primary-light);
+    }
+
     /* Macro List */
     .fox-macros {
       flex: 1;
@@ -424,6 +474,22 @@ function getFoxStyles() {
       font-size: 13px;
       text-align: center;
       padding: 24px 12px;
+    }
+
+    .fox-domain-group-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fox-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 4px 4px;
+      margin-top: 4px;
+      border-bottom: 1px solid var(--fox-gray-200);
+      margin-bottom: 6px;
+    }
+
+    .fox-domain-group-header:first-child {
+      margin-top: 0;
     }
 
     .fox-macro-card {
@@ -740,6 +806,24 @@ function getFoxStyles() {
     }
 
     .fox-edit-name:focus {
+      outline: none;
+      border-color: var(--fox-primary);
+      box-shadow: 0 0 0 2px var(--fox-primary-light);
+    }
+
+    .fox-edit-domain {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--fox-gray-200);
+      border-radius: var(--fox-radius-md);
+      font-size: 12px;
+      font-family: var(--fox-font);
+      color: var(--fox-gray-700);
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
+    }
+
+    .fox-edit-domain:focus {
       outline: none;
       border-color: var(--fox-primary);
       box-shadow: 0 0 0 2px var(--fox-primary-light);
