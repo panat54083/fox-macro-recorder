@@ -147,11 +147,4 @@ function switchTab(tabName) {
   contents.forEach(content => {
     content.classList.toggle('active', content.dataset.tab === tabName);
   });
-
-  // Handle inspector activation
-  if (tabName === 'inspector') {
-    activateInspector();
-  } else {
-    deactivateInspector();
-  }
 }

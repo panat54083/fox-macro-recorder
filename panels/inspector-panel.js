@@ -1,13 +1,50 @@
-// Fox Macro Recorder - Inspector Tab
+// Fox Macro Recorder - Inspector Panel (Standalone Floating Panel)
 
 let isInspectorActive = false;
 let inspectorSnapshots = [];
+let foxInspectorPanel = null;
 
-function renderInspectorTab() {
-  const container = foxShadowRoot?.querySelector('#fox-inspector-content');
-  if (!container) return;
+function openInspectorPanel() {
+  if (foxInspectorPanel) return; // already open
 
+  foxInspectorPanel = document.createElement('div');
+  foxInspectorPanel.id = 'fox-inspector-panel';
+
+  foxInspectorPanel.innerHTML = `
+    <div class="fox-inspector-panel-header">
+      <div class="fox-inspector-panel-title">\uD83D\uDD0D Inspector</div>
+      <button class="fox-icon-btn" id="fox-inspector-close" title="Close">\u00D7</button>
+    </div>
+    <div id="fox-inspector-content"></div>
+  `;
+
+  foxShadowRoot.appendChild(foxInspectorPanel);
+
+  // Make draggable by header
+  makeDraggable(foxInspectorPanel, foxInspectorPanel.querySelector('.fox-inspector-panel-header'));
+
+  // Close button
+  foxInspectorPanel.querySelector('#fox-inspector-close').addEventListener('click', closeInspectorPanel);
+
+  // Render initial content and activate
   updateInspectorContent(null);
+  activateInspector();
+}
+
+function closeInspectorPanel() {
+  deactivateInspector();
+  if (foxInspectorPanel) {
+    foxInspectorPanel.remove();
+    foxInspectorPanel = null;
+  }
+}
+
+function toggleInspectorPanel() {
+  if (foxInspectorPanel) {
+    closeInspectorPanel();
+  } else {
+    openInspectorPanel();
+  }
 }
 
 function activateInspector() {
@@ -67,7 +104,7 @@ function captureSnapshot(e) {
 }
 
 function updateInspectorContent(currentData) {
-  const container = foxShadowRoot?.querySelector('#fox-inspector-content');
+  const container = foxInspectorPanel?.querySelector('#fox-inspector-content');
   if (!container) return;
 
   const currentHTML = currentData ? `

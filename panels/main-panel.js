@@ -13,7 +13,7 @@ function createPanel() {
       </div>
       <div class="fox-tabs">
         <button class="fox-tab-btn active" data-tab="home" title="Home">\uD83C\uDFE0</button>
-        <button class="fox-tab-btn" data-tab="inspector" title="Inspector">\uD83D\uDD0D</button>
+        <button class="fox-tab-btn" id="fox-inspector-toggle" title="Inspector">\uD83D\uDD0D</button>
         <button class="fox-tab-btn" data-tab="settings" title="Settings">\u2699\uFE0F</button>
       </div>
       <div class="fox-header-actions">
@@ -40,11 +40,6 @@ function createPanel() {
       <div class="fox-macros" id="fox-macros-list">
         <div class="fox-empty">No macros saved</div>
       </div>
-    </div>
-
-    <!-- Inspector Tab -->
-    <div class="fox-tab-content" data-tab="inspector">
-      <div id="fox-inspector-content"></div>
     </div>
 
     <!-- Settings Tab -->
@@ -86,9 +81,6 @@ function createPanel() {
 
   // Render settings tab
   renderSettingsTab();
-
-  // Render inspector tab
-  renderInspectorTab();
 }
 
 function bindPanelEvents() {
@@ -102,11 +94,14 @@ function bindPanelEvents() {
   const closeBtn = foxShadowRoot.querySelector('#fox-close-btn');
 
   // Tab switching
-  foxShadowRoot.querySelectorAll('.fox-tab-btn').forEach(btn => {
+  foxShadowRoot.querySelectorAll('.fox-tab-btn[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       switchTab(btn.dataset.tab);
     });
   });
+
+  // Inspector toggle (opens floating panel)
+  foxShadowRoot.querySelector('#fox-inspector-toggle').addEventListener('click', toggleInspectorPanel);
 
   // Record
   recordBtn.addEventListener('click', startRecording);
